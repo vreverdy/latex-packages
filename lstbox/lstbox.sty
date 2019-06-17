@@ -1,0 +1,1141 @@
+%% ================================= LSTBOX ================================= %%
+%% Project:         lstbox
+%% Name:            lstbox.sty
+%% Description:     Fancy boxed listings
+%% Author(s):       Vincent Reverdy [2019-]
+%% License:         LPPL-1.3c
+%% ========================================================================== %%
+%% Copyright 2019 V. Reverdy
+%% This work may be distributed and/or modified under the conditions of the
+%% LaTeX Project Public License, either version 1.3 of this license or any later
+%% version. The latest version of the license is in http://www.latex-project.org
+%% /lppl.txt and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% This work has the LPPL maintenance status `maintained'.
+%% The Current Maintainer of this work is V. Reverdy.
+%% ========================================================================== %%
+%% Remarks about common options:
+%% listings/aboveskip: either 0pt or medskip
+%% ========================================================================== %%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{lstbox}[2019/01/01 Boxed Listings]
+%% ========================================================================== %%
+
+
+
+%% ================================ PACKAGES ================================ %%
+\RequirePackage{calc}
+\RequirePackage{xcolor}
+\RequirePackage{ifmtarg}
+\RequirePackage{pgfopts}
+\RequirePackage{listings}
+\RequirePackage{multicol}
+\RequirePackage{xcolor-material}
+\RequirePackage[most]{tcolorbox}
+%% ========================================================================== %%
+
+
+
+%% ================================ OPTIONS ================================= %%
+\pgfkeys{
+    % Main
+    /lstbox/.cd,
+    % Font style
+    fontstyle/.store in = \fontstyle,
+    fontstyle = \normalsize,
+    boxfontstyle/.store in = \boxfontstyle,
+    boxfontstyle = \fontstyle,
+    framefontstyle/.store in = \framefontstyle,
+    framefontstyle = \boxfontstyle,
+    % Listing tabulations
+    tabsize/.store in = \tabsize,
+    tabsize = 2,
+    boxtabsize/.store in = \boxtabsize,
+    boxtabsize = \tabsize,
+    frametabsize/.store in = \frametabsize,
+    frametabsize = \boxtabsize,
+    % Number count
+    numbercount/.store in = \numbercount,
+    numbercount = 3,
+    boxnumbercount/.store in = \boxnumbercount,
+    boxnumbercount = \numbercount,
+    framenumbercount/.store in = \framenumbercount,
+    framenumbercount = \boxnumbercount,
+    % Box and frame
+    boxrule/.store in = \boxrule,
+    boxrule = 0.5mm,
+    boxtitlefontstyle/.store in = \boxtitlefontstyle,
+    boxtitlefontstyle = \rmfamily\normalsize,
+    framerule/.store in = \framerule,
+    framerule = \boxrule,
+    frametitlefontstyle/.store in = \frametitlefontstyle,
+    frametitlefontstyle = \boxtitlefontstyle,
+    framemiddlerule/.store in = \framemiddlerule,
+    framemiddlerule = \framerule,
+    % Colors
+    fontcolor/.store in = \fontcolor,
+    fontcolor = black,
+    keywordcolor/.store in = \keywordcolor,
+    keywordcolor = blue,
+    commentcolor/.store in = \commentcolor,
+    commentcolor = MaterialGreen900,
+    backgroundcolor/.store in = \backgroundcolor,
+    backgroundcolor = MaterialGrey100,
+    numbercolor/.store in = \numbercolor,
+    numbercolor = MaterialGrey300,
+    numberfontcolor/.store in = \numberfontcolor,
+    numberfontcolor = black,
+    boxcolor/.store in = \boxcolor,
+    boxcolor = MaterialIndigo900,
+    framecolor/.store in = \framecolor,
+    framecolor = \boxcolor,
+    boxtitlefontcolor/.store in = \boxtitlefontcolor,
+    boxtitlefontcolor = white,
+    frametitlefontcolor/.store in = \frametitlefontcolor,
+    frametitlefontcolor = \boxtitlefontcolor,
+    % Light colors
+    lightfontcolor/.store in = \lightfontcolor,
+    lightfontcolor = \fontcolor,
+    lightkeywordcolor/.store in = \lightkeywordcolor,
+    lightkeywordcolor = \keywordcolor,
+    lightcommentcolor/.store in = \lightcommentcolor,
+    lightcommentcolor = \commentcolor,
+    lightbackgroundcolor/.store in = \lightbackgroundcolor,
+    lightbackgroundcolor = \backgroundcolor,
+    lightnumbercolor/.store in = \lightnumbercolor,
+    lightnumbercolor = \numbercolor,
+    lightnumberfontcolor/.store in = \lightnumberfontcolor,
+    lightnumberfontcolor = \numberfontcolor,
+    lightboxcolor/.store in = \lightboxcolor,
+    lightboxcolor = \boxcolor,
+    lightframecolor/.store in = \lightframecolor,
+    lightframecolor = \lightboxcolor,
+    lightboxtitlefontcolor/.store in = \lightboxtitlefontcolor,
+    lightboxtitlefontcolor = \boxtitlefontcolor,
+    lightframetitlefontcolor/.store in = \lightframetitlefontcolor,
+    lightframetitlefontcolor = \lightboxtitlefontcolor,
+    % Dark colors
+    darkfontcolor/.store in = \darkfontcolor,
+    darkfontcolor = ,
+    darkkeywordcolor/.store in = \darkkeywordcolor,
+    darkkeywordcolor = \keywordcolor,
+    darkcommentcolor/.store in = \darkcommentcolor,
+    darkcommentcolor = \commentcolor,
+    darkbackgroundcolor/.store in = \darkbackgroundcolor,
+    darkbackgroundcolor = black,
+    darknumbercolor/.store in = \darknumbercolor,
+    darknumbercolor = MaterialGrey900,
+    darknumberfontcolor/.store in = \darknumberfontcolor,
+    darknumberfontcolor = white,
+    darkboxcolor/.store in = \darkboxcolor,
+    darkboxcolor = \boxcolor,
+    darkframecolor/.store in = \darkframecolor,
+    darkframecolor = \darkboxcolor,
+    darkboxtitlefontcolor/.store in = \darkboxtitlefontcolor,
+    darkboxtitlefontcolor = \boxtitlefontcolor,
+    darkframetitlefontcolor/.store in = \darkframetitlefontcolor,
+    darkframetitlefontcolor = \darkboxtitlefontcolor,
+}
+
+%% -------------------------------------------------------------------------- %%
+\ProcessPgfPackageOptions{/lstbox}
+%% ========================================================================== %%
+
+
+
+%% ================================ LANGUAGES =============================== %%
+\lstdefinelanguage[20]{C++}[11]{C++}{
+    morekeywords = {
+        char8_t, concept, consteval, import, module, requires,
+        co_await, co_return, co_yield,
+        audit, axiom,
+        atomic_cancel, atomic_commit, atomic_noexcept, synchronized,
+        transaction_safe, transaction_safe_dynamic
+    },
+}
+%% -------------------------------------------------------------------------- %%
+\lstset{defaultdialect = [20]C++}
+%% ========================================================================== %%
+
+
+
+%% ================================ ALIGNMENT =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@numstring}{$0123456789$}
+\newlength{\lstbox@numwidth}
+\newlength{\lstbox@numheight}
+\newcommand{\lstbox@computenumdim}[1]{%
+    \settowidth{\lstbox@numwidth}{#1\lstbox@numstring}%
+    \setlength{\lstbox@numwidth}{0.1\lstbox@numwidth}%
+    \settoheight{\lstbox@numheight}{#1\lstbox@numstring}%
+}
+%% -------------------------------------------------------------------------- %%
+\newlength{\lstbox@numlen}
+\newlength{\lstbox@numbersep}
+\newlength{\lstbox@xleftmargin}
+\newlength{\lstbox@framexleftmargin}
+\newcommand{\lstbox@computealignment}[1]{%
+    \lstbox@computenumdim{#1}%
+    \setlength{\lstbox@numlen}{%
+        \lstbox@numwidth + \numbercount\lstbox@numwidth + \lstbox@numwidth%
+    }%
+    \setlength{\lstbox@numbersep}{0.5\lstbox@numwidth}%
+    \setlength{\lstbox@xleftmargin}{\lstbox@numlen + \lstbox@numbersep}%
+    \setlength{\lstbox@framexleftmargin}{\lstbox@numbersep}%
+}
+%% -------------------------------------------------------------------------- %%
+\newlength{\lstbox@boxnumlen}
+\newlength{\lstbox@boxxshift}
+\newlength{\lstbox@boxnumbersep}
+\newlength{\lstbox@boxhshift}
+\newlength{\lstbox@boxleft}
+\newlength{\lstbox@boxright}
+\newlength{\lstbox@boxsubtleshift}
+\newcommand{\lstbox@computeboxalignment}[1]{%
+    \lstbox@computenumdim{#1}%
+    \setlength{\lstbox@boxnumlen}{%
+        \lstbox@numwidth + \boxnumbercount\lstbox@numwidth + \lstbox@numwidth%
+    }%
+    \setlength{\lstbox@boxxshift}{\lstbox@boxnumlen}%
+    \setlength{\lstbox@boxnumbersep}{\lstbox@numwidth + 0.5\lstbox@numwidth}%
+    \setlength{\lstbox@boxhshift}{\lstbox@boxxshift + 0.5\lstbox@numwidth}%
+    \setlength{\lstbox@boxsubtleshift}{10pt}%
+    \setlength{\lstbox@boxleft}{\lstbox@boxhshift}%
+    \setlength{\lstbox@boxright}{-\lstbox@boxhshift + \lstbox@boxsubtleshift}%
+}
+%% -------------------------------------------------------------------------- %%
+\newlength{\lstbox@framemiddlerulewidth}
+\newlength{\lstbox@framemiddleruleoffset}
+\newlength{\lstbox@framemiddlerulerectangle}
+\newlength{\lstbox@framenumlen}
+\newlength{\lstbox@framexshift}
+\newlength{\lstbox@framenumbersep}
+\newlength{\lstbox@framehshift}
+\newlength{\lstbox@frameleft}
+\newlength{\lstbox@frameright}
+\newlength{\lstbox@framesubtleshift}
+\newlength{\lstbox@framealtleft}
+\newlength{\lstbox@framealtright}
+\newcommand{\lstbox@computeframealignment}[1]{%
+    \lstbox@computenumdim{#1}%
+    \setlength{\lstbox@framemiddlerulewidth}{\framemiddlerule}%
+    \setlength{\lstbox@framemiddleruleoffset}{1pt}%
+    \setlength{\lstbox@framemiddlerulerectangle}{
+        0.5\lstbox@framemiddlerulewidth + \lstbox@framemiddleruleoffset
+    }%
+    \setlength{\lstbox@framenumlen}{%
+        \lstbox@numwidth + \framenumbercount\lstbox@numwidth + \lstbox@numwidth
+    }%
+    \setlength{\lstbox@framexshift}{\lstbox@framenumlen}%
+    \setlength{\lstbox@framenumbersep}{\lstbox@numwidth + 0.5\lstbox@numwidth}%
+    \setlength{\lstbox@framehshift}{\lstbox@framexshift + 0.5\lstbox@numwidth}%
+    \setlength{\lstbox@framesubtleshift}{10pt}%
+    \setlength{\lstbox@frameleft}{\lstbox@framehshift}%
+    \setlength{\lstbox@frameright}{
+        -\lstbox@framehshift + \lstbox@framesubtleshift
+    }%
+    \setlength{\lstbox@framealtleft}{0.5\lstbox@numwidth}%
+    \setlength{\lstbox@framealtright}{%
+        -\lstbox@framealtleft + \lstbox@framesubtleshift
+    }%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================= HELPERS ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@makefont}[3][\fontfamily{cmtt}\selectfont]{%
+    #1\ifx#2\empty#3\else\@ifmtarg{#2}{#3}{\color{#2}#3}\fi%
+}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@writenumbers}[2]{%
+    \ifx#1\empty%
+        {\strut$#2$}%
+    \else%
+        {\@ifmtarg{#1}{}{\color{#1}}\strut$#2$}%
+    \fi%
+}
+%% -------------------------------------------------------------------------- %%
+\newlength{\lstbox@boxtitleshift}
+\newcommand{\lstbox@writeboxtitle}[4][\boxtitlefontstyle]{%
+    \setlength{\lstbox@boxtitleshift}{#4}%
+    \@ifmtarg{#3}{}{%
+        \hspace*{\lstbox@boxtitleshift}%
+        \centering{\makebox[\linewidth][c]{%
+            \lstbox@makefont{#2}{#1}#3\strut%
+        }}%
+    }%
+}
+%% -------------------------------------------------------------------------- %%
+\newlength{\lstbox@frametitleshift}
+\newcommand{\lstbox@writeframetitle}[4][\frametitlefontstyle]{%
+    \setlength{\lstbox@frametitleshift}{#4}%
+    \@ifmtarg{#3}{}{%
+        \hspace*{\lstbox@frametitleshift}%
+        \centering{\makebox[\linewidth][c]{%
+            \lstbox@makefont{#2}{#1}#3\strut%
+        }}%
+    }%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================ NUMBERING =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@numberstyle}[1]{%
+    \begingroup%
+    \fboxsep = 0em%
+    \ifx\numbercolor\empty%
+        \makebox[\lstbox@numlen][r]{%
+            \lstbox@writenumbers{\numberfontcolor}{#1}\hspace{\lstbox@numwidth}%
+        }%
+    \else%
+        \colorbox{\numbercolor}{\makebox[\lstbox@numlen][r]{%
+            \lstbox@writenumbers{\numberfontcolor}{#1}\hspace{\lstbox@numwidth}%
+        }}%
+    \fi%
+    \endgroup%
+}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@lightnumberstyle}[1]{%
+    \begingroup%
+    \fboxsep = 0em%
+    \ifx\lightnumbercolor\empty%
+        \makebox[\lstbox@numlen][r]{%
+            \lstbox@writenumbers{\lightnumberfontcolor}{#1}%
+            \hspace{\lstbox@numwidth}%
+        }%
+    \else%
+        \colorbox{\lightnumbercolor}{\makebox[\lstbox@numlen][r]{%
+            \lstbox@writenumbers{\lightnumberfontcolor}{#1}%
+            \hspace{\lstbox@numwidth}%
+        }}%
+    \fi%
+    \endgroup%
+}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@darknumberstyle}[1]{%
+    \begingroup%
+    \fboxsep = 0em%
+    \ifx\darknumbercolor\empty%
+        \makebox[\lstbox@numlen][r]{%
+            \lstbox@writenumbers{\darknumberfontcolor}{#1}%
+            \hspace{\lstbox@numwidth}%
+        }%
+    \else%
+        \colorbox{\darknumbercolor}{\makebox[\lstbox@numlen][r]{%
+            \lstbox@writenumbers{\darknumberfontcolor}{#1}%
+            \hspace{\lstbox@numwidth}%
+        }}%
+    \fi%
+    \endgroup%
+}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@boxnumberstyle}[1]{%
+    \begingroup\lstbox@writenumbers{\numberfontcolor}{#1}\endgroup%
+}%
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@lightboxnumberstyle}[1]{%
+    \begingroup\lstbox@writenumbers{\lightnumberfontcolor}{#1}\endgroup%
+}%
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@darkboxnumberstyle}[1]{%
+    \begingroup\lstbox@writenumbers{\darknumberfontcolor}{#1}\endgroup%
+}%
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@framenumberstyle}[1]{%
+    \begingroup\lstbox@writenumbers{\numberfontcolor}{#1}\endgroup%
+}%
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@lightframenumberstyle}[1]{%
+    \begingroup\lstbox@writenumbers{\lightnumberfontcolor}{#1}\endgroup%
+}%
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@darkframenumberstyle}[1]{%
+    \begingroup\lstbox@writenumbers{\darknumberfontcolor}{#1}\endgroup%
+}%
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================= LISTING STYLES ============================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{listingstyle}{
+    language = C++,
+    showstringspaces = false,
+    literate = {~}{$\sim$}{1},
+    basicstyle = \lstbox@makefont{\fontcolor}{\fontstyle},
+    numbers = left,
+    numberstyle = \lstbox@numberstyle,
+    numbersep = \lstbox@numbersep,
+    tabsize = \tabsize,
+    frame = lines,
+    framesep = 0em,
+    framerule = 0pt,
+    aboveskip = \medskipamount,
+    belowskip = 0em,
+    xleftmargin = \lstbox@xleftmargin,
+    framexleftmargin = \lstbox@framexleftmargin,
+    keywordstyle = \color{\keywordcolor},
+    commentstyle = \color{\commentcolor},
+    backgroundcolor = \color{\backgroundcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{listingstyle*}{
+    style = listingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{boxlistingstyle}{
+    language = C++,
+    showstringspaces = false,
+    literate = {~}{$\sim$}{1},
+    basicstyle = \lstbox@makefont{\fontcolor}{\boxfontstyle},
+    numbers = left,
+    numberstyle = \lstbox@boxnumberstyle,
+    numbersep = 0em,
+    tabsize = \boxtabsize,
+    framesep = 0em,
+    aboveskip = 0em,
+    belowskip = 0em,
+    xleftmargin = 0em,
+    keywordstyle = \color{\keywordcolor},
+    commentstyle = \color{\commentcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{boxlistingstyle*}{
+    style = boxlistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{framelistingstyle}{
+    language = C++,
+    showstringspaces = false,
+    literate = {~}{$\sim$}{1},
+    basicstyle = \lstbox@makefont{\fontcolor}{\framefontstyle},
+    numbers = left,
+    numberstyle = \lstbox@framenumberstyle,
+    numbersep = 0em,
+    tabsize = \boxtabsize,
+    framesep = 0em,
+    aboveskip = 0em,
+    belowskip = 0em,
+    xleftmargin = 0em,
+    keywordstyle = \color{\keywordcolor},
+    commentstyle = \color{\commentcolor},
+    multicols = 2,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{framelistingstyle*}{
+    style = framelistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{lightlistingstyle}{
+    style = listingstyle,
+    basicstyle = \lstbox@makefont{\lightfontcolor}{\fontstyle},
+    numberstyle = \lstbox@lightnumberstyle,
+    keywordstyle = \color{\lightkeywordcolor},
+    commentstyle = \color{\lightcommentcolor},
+    backgroundcolor = \color{\lightbackgroundcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{lightlistingstyle*}{
+    style = lightlistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{lightboxlistingstyle}{
+    style = boxlistingstyle,
+    basicstyle = \lstbox@makefont{\lightfontcolor}{\boxfontstyle},
+    numberstyle = \lstbox@lightboxnumberstyle,
+    keywordstyle = \color{\lightkeywordcolor},
+    commentstyle = \color{\lightcommentcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{lightboxlistingstyle*}{
+    style = lightboxlistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{lightframelistingstyle}{
+    style = framelistingstyle,
+    basicstyle = \lstbox@makefont{\lightfontcolor}{\framefontstyle},
+    numberstyle = \lstbox@lightframenumberstyle,
+    keywordstyle = \color{\lightkeywordcolor},
+    commentstyle = \color{\lightcommentcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{lightframelistingstyle*}{
+    style = lightframelistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{darklistingstyle}{
+    style = listingstyle,
+    basicstyle = \lstbox@makefont{\darkfontcolor}{\fontstyle},
+    numberstyle = \lstbox@darknumberstyle,
+    keywordstyle = \color{\darkkeywordcolor},
+    commentstyle = \color{\darkcommentcolor},
+    backgroundcolor = \color{\darkbackgroundcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{darklistingstyle*}{
+    style = darklistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{darkboxlistingstyle}{
+    style = boxlistingstyle,
+    basicstyle = \lstbox@makefont{\darkfontcolor}{\boxfontstyle},
+    numberstyle = \lstbox@darkboxnumberstyle,
+    keywordstyle = \color{\darkkeywordcolor},
+    commentstyle = \color{\darkcommentcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{darkboxlistingstyle*}{
+    style = darkboxlistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{darkframelistingstyle}{
+    style = framelistingstyle,
+    basicstyle = \lstbox@makefont{\darkfontcolor}{\framefontstyle},
+    numberstyle = \lstbox@darkframenumberstyle,
+    keywordstyle = \color{\darkkeywordcolor},
+    commentstyle = \color{\darkcommentcolor},
+}
+%% -------------------------------------------------------------------------- %%
+\lstdefinestyle{darkframelistingstyle*}{
+    style = darkframelistingstyle,
+    numbers = none,
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== BOX STYLES =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\tcbset{boxstyle/.style = {
+    code = {\lstbox@computeboxalignment{\fontstyle}},
+    enhanced,
+    listing only,
+    breakable = unlimited,
+    top = 0em,
+    bottom = 0em,
+    left = \lstbox@boxleft,
+    right = \lstbox@boxright,
+    arc = 0em,
+    outer arc = 0em,
+    boxsep = 0em,
+    boxrule = \boxrule,
+    titlerule = 0em,
+    colback = \backgroundcolor,
+    colframe = \boxcolor,
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\boxtitlefontcolor}{%
+    }{-\lstbox@boxleft + \lstbox@boxright},
+    listing options = {
+        style = boxlistingstyle,
+        basicstyle = \lstbox@makefont{\fontcolor}{\fontstyle},
+        numbers = left,
+        numberstyle = \lstbox@boxnumberstyle,
+        numbersep = \lstbox@boxnumbersep,
+    },
+    overlay = {
+        \fill[\numbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@boxxshift] interior.south west);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{boxstyle*/.style = {
+    boxstyle,
+    code = {\lstbox@computeboxalignment{\fontstyle}},
+    left = 0pt,
+    right = 0pt,
+    listing options = {
+        style = boxlistingstyle*,
+        basicstyle = \lstbox@makefont{\fontcolor}{\fontstyle},
+        xleftmargin = 0.5\lstbox@numwidth,
+        framexleftmargin = 0.5\lstbox@numwidth,
+    },
+    overlay = {
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{lightboxstyle/.style = {
+    boxstyle,
+    colback = \lightbackgroundcolor,
+    colframe = \lightboxcolor,
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\lightboxtitlefontcolor}{%
+    }{-\lstbox@boxleft + \lstbox@boxright},
+    listing options = {
+        style = lightboxlistingstyle,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{\fontstyle},
+        numbers = left,
+        numberstyle = \lstbox@lightboxnumberstyle,
+        numbersep = \lstbox@boxnumbersep,
+    },
+    overlay = {
+        \fill[\lightnumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@boxxshift] interior.south west);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{lightboxstyle*/.style = {
+    lightboxstyle,
+    code = {\lstbox@computeboxalignment{\fontstyle}},
+    left = 0pt,
+    right = 0pt,
+    listing options = {
+        style = lightboxlistingstyle*,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{\fontstyle},
+        xleftmargin = 0.5\lstbox@numwidth,
+        framexleftmargin = 0.5\lstbox@numwidth,
+    },
+    overlay = {
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{darkboxstyle/.style = {
+    boxstyle,
+    colback = \darkbackgroundcolor,
+    colframe = \darkboxcolor,
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\darkboxtitlefontcolor}{%
+    }{-\lstbox@boxleft + \lstbox@boxright},
+    listing options = {
+        style = darkboxlistingstyle,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{\fontstyle},
+        numbers = left,
+        numberstyle = \lstbox@darkboxnumberstyle,
+        numbersep = \lstbox@boxnumbersep,
+    },
+    overlay = {
+        \fill[\darknumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@boxxshift] interior.south west);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{darkboxstyle*/.style = {
+    darkboxstyle,
+    code = {\lstbox@computeboxalignment{\fontstyle}},
+    left = 0pt,
+    right = 0pt,
+    listing options = {
+        style = darkboxlistingstyle*,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{\fontstyle},
+        xleftmargin = 0.5\lstbox@numwidth,
+        framexleftmargin = 0.5\lstbox@numwidth,
+    },
+    overlay = {
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================== FRAME STYLES ============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\tcbset{framestyle/.style = {
+    code = {\lstbox@computeframealignment{\fontstyle}},
+    before upper = {\topskip0pt \maxdepth=0pt}, % to be replaced by * from 2019
+    enhanced,
+    listing only,
+    breakable = unlimited,
+    top = 0em,
+    bottom = 0em,
+    left = \lstbox@frameleft,
+    right = \lstbox@frameright,
+    arc = 0em,
+    outer arc = 0em,
+    boxsep = 0em,
+    boxrule = \framerule,
+    titlerule = 0em,
+    colback = \backgroundcolor,
+    colframe = \framecolor,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \frametitlefontcolor%
+    }{}{-\lstbox@frameleft + \lstbox@frameright},
+    listing options = {
+        style = framelistingstyle,
+        basicstyle = \lstbox@makefont{\fontcolor}{\fontstyle},
+        numbers = left,
+        numberstyle = \lstbox@framenumberstyle,
+        numbersep = \lstbox@framenumbersep,
+    },
+    overlay = {
+        \fill[\numbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@framexshift] interior.south west);
+        \draw[line width = \framemiddlerule, \framecolor]
+            (interior.north) -- (interior.south);
+        \fill[\numbercolor] (interior.north) rectangle
+            ([xshift = \lstbox@framemiddlerulewidth] interior.south);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{framestyle*/.style = {
+    framestyle,
+    code = {\lstbox@computeframealignment{\fontstyle}},
+    left = \lstbox@framealtleft,
+    right = \lstbox@framealtright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \frametitlefontcolor%
+    }{}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
+    listing options = {
+        style = framelistingstyle*,
+        basicstyle = \lstbox@makefont{\fontcolor}{\fontstyle},
+    },
+    overlay = {
+        \draw[line width = \framemiddlerule, \framecolor]
+            (interior.north) -- (interior.south);
+        \fill[\backgroundcolor] (interior.north) rectangle
+            ([xshift = \lstbox@framemiddlerulerectangle] interior.south);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{lightframestyle/.style = {
+    framestyle,
+    colback = \lightbackgroundcolor,
+    colframe = \lightframecolor,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \lightframetitlefontcolor%
+    }{}{-\lstbox@frameleft + \lstbox@frameright},
+    listing options = {
+        style = lightframelistingstyle,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{\fontstyle},
+        numbers = left,
+        numberstyle = \lstbox@lightframenumberstyle,
+        numbersep = \lstbox@framenumbersep,
+    },
+    overlay = {
+        \fill[\lightnumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@framexshift] interior.south west);
+        \draw[line width = \framemiddlerule, \lightframecolor]
+            (interior.north) -- (interior.south);
+        \fill[\lightnumbercolor] (interior.north) rectangle
+            ([xshift = \lstbox@framexshift] interior.south);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{lightframestyle*/.style = {
+    lightframestyle,
+    code = {\lstbox@computeframealignment{\fontstyle}},
+    left = \lstbox@framealtleft,
+    right = \lstbox@framealtright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \lightframetitlefontcolor%
+    }{}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
+    listing options = {
+        style = lightframelistingstyle*,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{\fontstyle},
+    },
+    overlay = {
+        \draw[line width = \framemiddlerule, \lightframecolor]
+            (interior.north) -- (interior.south);
+        \fill[\lightbackgroundcolor] (interior.north) rectangle
+            ([xshift = \lstbox@framemiddlerulerectangle] interior.south);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{darkframestyle/.style = {
+    framestyle,
+    colback = \darkbackgroundcolor,
+    colframe = \darkframecolor,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \darkframetitlefontcolor%
+    }{}{-\lstbox@frameleft + \lstbox@frameright},
+    listing options = {
+        style = darkframelistingstyle,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{\fontstyle},
+        numbers = left,
+        numberstyle = \lstbox@darkframenumberstyle,
+        numbersep = \lstbox@framenumbersep,
+    },
+    overlay = {
+        \fill[\darknumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@framexshift] interior.south west);
+        \draw[line width = \framemiddlerule, \darkframecolor]
+            (interior.north) -- (interior.south);
+        \fill[\darknumbercolor] (interior.north) rectangle
+            ([xshift = \lstbox@framexshift] interior.south);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{darkframestyle*/.style = {
+    darkframestyle,
+    code = {\lstbox@computeframealignment{\fontstyle}},
+    left = \lstbox@framealtleft,
+    right = \lstbox@framealtright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \darkframetitlefontcolor%
+    }{}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
+    listing options = {
+        style = darkframelistingstyle*,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{\fontstyle},
+    },
+    overlay = {
+        \draw[line width = \framemiddlerule, \darkframecolor]
+            (interior.north) -- (interior.south);
+        \fill[\darkbackgroundcolor] (interior.north) rectangle
+            ([xshift = \lstbox@framemiddlerulerectangle] interior.south);
+    },
+}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ========================== LISTING ENVIRONMENTS ========================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\lstnewenvironment{code}[2][\fontstyle]{%
+    \lstbox@computealignment{#1}%
+    \lstset{
+        style = listingstyle,
+        basicstyle = \lstbox@makefont{\fontcolor}{#1},
+        numbersep = \lstbox@numbersep,
+        xleftmargin = \lstbox@xleftmargin,
+        framexleftmargin = \lstbox@framexleftmargin,
+        #2,
+    }%
+}{}
+%% -------------------------------------------------------------------------- %%
+\lstnewenvironment{code*}[2][\fontstyle]{%
+    \lstbox@computealignment{#1}%
+    \lstset{
+        style = listingstyle*,
+        basicstyle = \lstbox@makefont{\fontcolor}{#1},
+        xleftmargin = \lstbox@numbersep,
+        framexleftmargin = \lstbox@numbersep,
+        #2,
+    }%
+}{}
+%% -------------------------------------------------------------------------- %%
+\lstnewenvironment{lightcode}[2][\fontstyle]{%
+    \lstbox@computealignment{#1}%
+    \lstset{
+        style = listingstyle,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{#1},
+        numbersep = \lstbox@numbersep,
+        xleftmargin = \lstbox@xleftmargin,
+        framexleftmargin = \lstbox@framexleftmargin,
+        #2,
+    }%
+}{}
+%% -------------------------------------------------------------------------- %%
+\lstnewenvironment{lightcode*}[2][\fontstyle]{%
+    \lstbox@computealignment{#1}%
+    \lstset{
+        style = lightlistingstyle*,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{#1},
+        xleftmargin = \lstbox@numbersep,
+        framexleftmargin = \lstbox@numbersep,
+        #2,
+    }%
+}{}
+%% -------------------------------------------------------------------------- %%
+\lstnewenvironment{darkcode}[2][\fontstyle]{%
+    \lstbox@computealignment{#1}%
+    \lstset{
+        style = darklistingstyle,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{#1},
+        numbersep = \lstbox@numbersep,
+        xleftmargin = \lstbox@xleftmargin,
+        framexleftmargin = \lstbox@framexleftmargin,
+        #2,
+    }%
+}{}
+%% -------------------------------------------------------------------------- %%
+\lstnewenvironment{darkcode*}[2][\fontstyle]{%
+    \lstbox@computealignment{#1}%
+    \lstset{
+        style = darklistingstyle*,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{#1},
+        xleftmargin = \lstbox@numbersep,
+        framexleftmargin = \lstbox@numbersep,
+        #2,
+    }%
+}{}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================ BOX ENVIRONMENTS ============================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{codebox}[4][\fontstyle]{
+    boxstyle,
+    code = {\lstbox@computeboxalignment{#1}},
+    left = \lstbox@boxleft,
+    right = \lstbox@boxright,
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\boxtitlefontcolor}{%
+        #2%
+    }{-\lstbox@boxleft + \lstbox@boxright},
+    listing options = {
+        style = boxlistingstyle,
+        basicstyle = \lstbox@makefont{\fontcolor}{#1},
+        numbers = left,
+        numberstyle = \lstbox@boxnumberstyle,
+        numbersep = \lstbox@boxnumbersep,
+        #3,
+    },
+    overlay = {
+        \fill[\numbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@boxxshift] interior.south west);
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{codebox*}[4][\fontstyle]{
+    boxstyle*,
+    code = {\lstbox@computeboxalignment{#1}},
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\boxtitlefontcolor}{%
+        #2%
+    }{0pt},
+    listing options = {
+        style = boxlistingstyle*,
+        basicstyle = \lstbox@makefont{\fontcolor}{#1},
+        xleftmargin = 0.5\lstbox@numwidth,
+        framexleftmargin = 0.5\lstbox@numwidth,
+        #3,
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{lightcodebox}[4][\fontstyle]{
+    lightboxstyle,
+    code = {\lstbox@computeboxalignment{#1}},
+    left = \lstbox@boxleft,
+    right = \lstbox@boxright,
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\lightboxtitlefontcolor}{%
+        #2%
+    }{-\lstbox@boxleft + \lstbox@boxright},
+    listing options = {
+        style = lightboxlistingstyle,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{#1},
+        numbers = left,
+        numberstyle = \lstbox@lightboxnumberstyle,
+        numbersep = \lstbox@boxnumbersep,
+        #3,
+    },
+    overlay = {
+        \fill[\lightnumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@boxxshift] interior.south west);
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{lightcodebox*}[4][\fontstyle]{
+    lightboxstyle*,
+    code = {\lstbox@computeboxalignment{#1}},
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\lightboxtitlefontcolor}{%
+        #2%
+    }{0pt},
+    listing options = {
+        style = lightboxlistingstyle*,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{#1},
+        xleftmargin = 0.5\lstbox@numwidth,
+        framexleftmargin = 0.5\lstbox@numwidth,
+        #3,
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{darkcodebox}[4][\fontstyle]{
+    darkboxstyle,
+    code = {\lstbox@computeboxalignment{#1}},
+    left = \lstbox@boxleft,
+    right = \lstbox@boxright,
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\darkboxtitlefontcolor}{%
+        #2%
+    }{-\lstbox@boxleft + \lstbox@boxright},
+    listing options = {
+        style = darkboxlistingstyle,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{#1},
+        numbers = left,
+        numberstyle = \lstbox@darkboxnumberstyle,
+        numbersep = \lstbox@boxnumbersep,
+        #3,
+    },
+    overlay = {
+        \fill[\darknumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@boxxshift] interior.south west);
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{darkcodebox*}[4][\fontstyle]{
+    darkboxstyle*,
+    code = {\lstbox@computeboxalignment{#1}},
+    title = \lstbox@writeboxtitle[\boxtitlefontstyle]{\darkboxtitlefontcolor}{%
+        #2%
+    }{0pt},
+    listing options = {
+        style = darkboxlistingstyle*,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{#1},
+        xleftmargin = 0.5\lstbox@numwidth,
+        framexleftmargin = 0.5\lstbox@numwidth,
+        #3,
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =========================== FRAME ENVIRONMENTS =========================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{codeframe}[4][\fontstyle]{
+    framestyle,
+    code = {\lstbox@computeframealignment{#1}},
+    left = \lstbox@frameleft,
+    right = \lstbox@frameright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \frametitlefontcolor%
+    }{#2}{-\lstbox@frameleft + \lstbox@frameright},
+    listing options = {
+        style = framelistingstyle,
+        basicstyle = \lstbox@makefont{\fontcolor}{#1},
+        numbers = left,
+        numberstyle = \lstbox@framenumberstyle,
+        numbersep = \lstbox@framenumbersep,
+        #3,
+    },
+    overlay = {
+        \fill[\numbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@framexshift] interior.south west);
+        \draw[line width = \framemiddlerule, \framecolor]
+            (interior.north) -- (interior.south);
+        \fill[\numbercolor] (interior.north) rectangle
+            ([xshift = \lstbox@framexshift] interior.south);
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{codeframe*}[4][\fontstyle]{
+    framestyle*,
+    code = {\lstbox@computeframealignment{#1}},
+    left = \lstbox@framealtleft,
+    right = \lstbox@framealtright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \frametitlefontcolor%
+    }{#2}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
+    listing options = {
+        style = framelistingstyle*,
+        basicstyle = \lstbox@makefont{\fontcolor}{#1},
+        #3,
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{lightcodeframe}[4][\fontstyle]{
+    lightframestyle,
+    code = {\lstbox@computeframealignment{#1}},
+    left = \lstbox@frameleft,
+    right = \lstbox@frameright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \lightframetitlefontcolor%
+    }{#2}{-\lstbox@frameleft + \lstbox@frameright},
+    listing options = {
+        style = lightframelistingstyle,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{#1},
+        numbers = left,
+        numberstyle = \lstbox@lightframenumberstyle,
+        numbersep = \lstbox@framenumbersep,
+        #3,
+    },
+    overlay = {
+        \fill[\lightnumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@framexshift] interior.south west);
+        \draw[line width = \framemiddlerule, \lightframecolor]
+            (interior.north) -- (interior.south);
+        \fill[\lightnumbercolor] (interior.north) rectangle
+            ([xshift = \lstbox@framexshift] interior.south);
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{lightcodeframe*}[4][\fontstyle]{
+    lightframestyle*,
+    code = {\lstbox@computeframealignment{#1}},
+    left = \lstbox@framealtleft,
+    right = \lstbox@framealtright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \lightframetitlefontcolor%
+    }{#2}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
+    listing options = {
+        style = lightframelistingstyle*,
+        basicstyle = \lstbox@makefont{\lightfontcolor}{#1},
+        #3,
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{darkcodeframe}[4][\fontstyle]{
+    darkframestyle,
+    code = {\lstbox@computeframealignment{#1}},
+    left = \lstbox@frameleft,
+    right = \lstbox@frameright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \darkframetitlefontcolor%
+    }{#2}{-\lstbox@frameleft + \lstbox@frameright},
+    listing options = {
+        style = darkframelistingstyle,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{#1},
+        numbers = left,
+        numberstyle = \lstbox@darkframenumberstyle,
+        numbersep = \lstbox@framenumbersep,
+        #3,
+    },
+    overlay = {
+        \fill[\darknumbercolor] (interior.north west) rectangle
+            ([xshift = \lstbox@framexshift] interior.south west);
+        \draw[line width = \framemiddlerule, \darkframecolor]
+            (interior.north) -- (interior.south);
+        \fill[\darknumbercolor] (interior.north) rectangle
+            ([xshift = \lstbox@framexshift] interior.south);
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\newtcblisting{darkcodeframe*}[4][\fontstyle]{
+    darkframestyle*,
+    code = {\lstbox@computeframealignment{#1}},
+    left = \lstbox@framealtleft,
+    right = \lstbox@framealtright,
+    title = \lstbox@writeframetitle[\frametitlefontstyle]{%
+        \darkframetitlefontcolor%
+    }{#2}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
+    listing options = {
+        style = darkframelistingstyle*,
+        basicstyle = \lstbox@makefont{\darkfontcolor}{#1},
+        #3,
+    },
+    #4,
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%

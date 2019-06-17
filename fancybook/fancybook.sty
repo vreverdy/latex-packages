@@ -1,0 +1,368 @@
+%% ================================ FANCYBOOK =============================== %%
+%% Project:         fancybook
+%% Name:            fancybook.sty
+%% Description:     Layout an design commands for fancy books
+%% Author(s):       Vincent Reverdy [2019-]
+%% License:         LPPL-1.3c
+%% ========================================================================== %%
+%% Copyright 2019 V. Reverdy
+%% This work may be distributed and/or modified under the conditions of the
+%% LaTeX Project Public License, either version 1.3 of this license or any later
+%% version. The latest version of the license is in http://www.latex-project.org
+%% /lppl.txt and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% This work has the LPPL maintenance status `maintained'.
+%% The Current Maintainer of this work is V. Reverdy.
+%% ========================================================================== %%
+%% \fancybookpagestyle{}
+%% \fancypart{part title}{epigraph text}{epigraph author}
+%% \fancypart[epigraph width]{part title}{epigraph text}{epigraph author}
+%% ========================================================================== %%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{fancybook}[2019/01/01 Fancy Book]
+%% ========================================================================== %%
+
+
+
+%% ================================ PACKAGES ================================ %%
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{xpatch}
+\RequirePackage{ifmtarg}
+\RequirePackage{pgfopts}
+\RequirePackage{epigraph}
+\RequirePackage{etoolbox}
+\RequirePackage{fancyhdr}
+\RequirePackage{titletoc}
+\RequirePackage{anyfontsize}
+\RequirePackage{tikzpagenodes}
+\RequirePackage{xcolor-material}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage[explicit]{titlesec}
+%% -------------------------------------------------------------------------- %%
+\usetikzlibrary{calc}
+\usetikzlibrary{fadings}
+\usetikzlibrary{shadows.blur}
+\usetikzlibrary{matrix}
+%% -------------------------------------------------------------------------- %%
+\newlength{\defaultparskip}
+\newlength{\defaultparindent}
+\newlength{\defaultparfillskip}
+\setlength{\defaultparskip}{\parskip}
+\setlength{\defaultparindent}{\parindent}
+\setlength{\defaultparfillskip}{\parfillskip}
+\RequirePackage{parskip}
+%% ========================================================================== %%
+
+
+
+%% ================================ OPTIONS ================================= %%
+\pgfkeys{
+    /fancybook/.cd,
+    % Main parameters
+    maincolor/.store in = \maincolor,
+    maincolor = MaterialIndigo900,
+    mainparskip/.store in = \mainparskip,
+    mainparskip = 0.25\baselineskip plus 2pt,
+    mainparindent/.store in = \mainparindent,
+    mainparindent = 0pt,
+    % Page style
+    headfootfont/.store in = \headfootfont,
+    headfootfont = \small\bf,
+    headfootcolor/.store in = \headfootcolor,
+    headfootcolor = MaterialGrey500,
+    % Part style
+    partcolor/.store in = \partcolor,
+    partcolor = \maincolor,
+    partfont/.store in = \partfont,
+    partfont = \scshape\Huge,
+    partnamefont/.store in = \partnamefont,
+    partnamefont = \sffamily\fontsize{36}{36}\selectfont,
+    partnumfont/.store in = \partnumfont,
+    partnumfont = \sffamily\fontsize{24}{24}\bf\selectfont,
+    partrule/.store in = \partrule,
+    partrule = 1.5pt,
+    partepigraphwidth/.store in = \partepigraphwidth,
+    partepigraphwidth = 2.15in,
+    partepigraphrule/.store in = \partepigraphrule,
+    partepigraphrule = 0pt,
+    partepigraphhead/.store in = \partepigraphhead,
+    partepigraphhead = 0.65\paperheight,
+    % Chapter style
+    chaptercolor/.store in = \chaptercolor,
+    chaptercolor = \maincolor,
+    chapterfont/.store in = \chapterfont,
+    chapterfont = \scshape\Huge,
+    chapternamefont/.store in = \chapternamefont,
+    chapternamefont = \sffamily\huge,
+    chapternumfont/.store in = \chapternumfont,
+    chapternumfont = \sffamily\fontsize{76}{76}\bf\selectfont,
+    chapterboxwidth/.store in = \chapterboxwidth,
+    chapterboxwidth = 3.0cm,
+    chapterboxheight/.store in = \chapterboxheight,
+    chapterboxheight = 3.4cm,
+    chapternamevskip/.store in = \chapternamevskip,
+    chapternamevskip = 12em,
+    chapterrule/.store in = \chapterrule,
+    chapterrule = 1.5pt,
+    chaptertextspacing/.store in = \chaptertextspacing,
+    chaptertextspacing = \smallskipamount,
+    chapterbeforetocvskip/.store in = \chapterbeforetocvskip,
+    chapterbeforetocvskip = \medskipamount,
+    chapteraftertocvskip/.store in = \chapteraftertocvskip,
+    chapteraftertocvskip = \bigskipamount,
+    chaptertocsectionspacing/.store in = \chaptertocsectionspacing,
+    chaptertocsectionspacing = \smallskipamount,
+    chapteraftertocspacing/.store in = \chapteraftertocspacing,
+    chapteraftertocspacing = \baselineskip,
+    chaptertoccolor/.store in = \chaptertoccolor,
+    chaptertoccolor = MaterialGrey100,
+    % Section style
+    sectioncolor/.store in = \sectioncolor,
+    sectioncolor = black,
+    sectionfont/.store in = \sectionfont,
+    sectionfont = ,
+    sectionbeforespacing/.store in = \sectionbeforespacing,
+    sectionbeforespacing = ,
+    sectionafterspacing/.store in = \sectionafterspacing,
+    sectionafterspacing = ,
+    % Subsection style
+    subsectioncolor/.store in = \subsectioncolor,
+    subsectioncolor = black,
+    subsectionfont/.store in = \subsectionfont,
+    subsectionfont = ,
+    subsectionbeforespacing/.store in = \subsectionbeforespacing,
+    subsectionbeforespacing = ,
+    subsectionafterspacing/.store in = \subsectionafterspacing,
+    subsectionafterspacing = ,
+    % Subsubsection style
+    subsubsectioncolor/.store in = \subsubsectioncolor,
+    subsubsectioncolor = black,
+    subsubsectionfont/.store in = \subsubsectionfont,
+    subsubsectionfont = ,
+    subsubsectionbeforespacing/.store in = \subsubsectionbeforespacing,
+    subsubsectionbeforespacing = ,
+    subsubsectionafterspacing/.store in = \subsubsectionafterspacing,
+    subsubsectionafterspacing = ,
+    % Paragraph style
+    paragraphcolor/.store in = \paragraphcolor,
+    paragraphcolor = black,
+    paragraphfont/.store in = \paragraphfont,
+    paragraphfont = ,
+    paragraphbeforespacing/.store in = \paragraphbeforespacing,
+    paragraphbeforespacing = ,
+    paragraphafterspacing/.store in = \paragraphafterspacing,
+    paragraphafterspacing = ,
+}
+%% -------------------------------------------------------------------------- %%
+\ProcessPgfPackageOptions{/fancybook}
+%% ========================================================================== %%
+
+
+
+%% ================================= PARSKIP ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\setlength{\parskip}{\mainparskip}
+\setlength{\parindent}{\mainparindent}
+%% -------------------------------------------------------------------------- %%
+\newlength{\textsize}
+\setlength{\textsize}{\f@size pt}
+\newcommand{\fancybook@forgetparskip}{\setlength{\parskip}{0pt}}
+\newcommand{\fancybook@restoreparskip}{\setlength{\parskip}{\mainparskip}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== PAGE STYLE =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancybook@makeheadfoot}[1]{%
+    \headfootfont\selectfont\color{\headfootcolor}#1%
+}
+%% -------------------------------------------------------------------------- %%
+\fancypagestyle{fancybookps}{
+    \fancyhf{}
+    \fancyhead[RO,LE]{\fancybook@makeheadfoot{\thepage}}
+    \fancyhead[LO]{\fancybook@makeheadfoot{\rightmark}}
+    \fancyhead[RE]{\fancybook@makeheadfoot{\leftmark}}
+    \fancypagestyle{plain}{
+        \fancyhf{}\fancyfoot[C]{\fancybook@makeheadfoot{\thepage}}
+    }
+    \renewcommand{\headrulewidth}{0.0pt}
+    \renewcommand{\footrulewidth}{0.0pt}
+}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancybookpagestyle}{
+    \pagestyle{fancybookps}
+    \renewcommand\chaptermark[1]{%
+      \markboth{\MakeUppercase{%
+        \ifnum \c@secnumdepth >\m@ne
+          \if@mainmatter
+            \@chapapp\ \thechapter. \ %
+          \fi
+        \fi
+        ##1}}{}%
+    }
+    \renewcommand\@mkboth[2]{\markboth{##1}{}}
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== PART STYLE =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newlength{\fancybook@partcircle}
+\settowidth{\fancybook@partcircle}{\partnumfont\selectfont{}XIII}
+\setlength{\fancybook@partcircle}{1.25\fancybook@partcircle}
+%% -------------------------------------------------------------------------- %%
+\titleformat{\part}[display]{\normalfont\filcenter}{
+    \tikz[remember picture, overlay] {
+        \matrix [column sep = 5mm] at
+            ($(current page text area.center)+(0em, 10\baselineskip)$) {
+            \node[
+                inner sep = 0pt,
+                outer sep = 0pt,
+                font = \partnamefont,
+            ] (parttext) {Part};
+            \pgfmatrixnextcell
+            \node [
+                circle,
+                fill = \partcolor,
+                font = \partnumfont\color{white},
+                outer sep = 0pt,
+                minimum size = \fancybook@partcircle,
+            ] (partnum) {\thepart};
+            \\
+        };
+    }
+}{10em}{%
+    \thispagestyle{fancybookps}
+    \noindent{\color{\partcolor}\rule{\textwidth}{\partrule}}
+    {\partfont\color{\partcolor}#1}
+    \noindent{\color{\partcolor}\rule{\textwidth}{\partrule}}
+}[\thispagestyle{epigraph}]
+%% -------------------------------------------------------------------------- %%
+\xpatchcmd\epigraphhead{\let\@evenfoot}{\let\@oddfoot\@empty\let\@evenfoot}{}{}
+%% -------------------------------------------------------------------------- %%
+\newlength{\fancybook@epigraphrule}
+\setlength{\fancybook@epigraphrule}{\epigraphrule}
+\newlength{\fancybook@epigraphposition}
+\setlength{\fancybook@epigraphposition}{\partepigraphhead}
+\newcommand{\fancypart}[4][\partepigraphwidth]{%
+    \setlength{\epigraphwidth}{#1}%
+    \setlength{\epigraphrule}{\partepigraphrule}%
+    \epigraphhead[\strip@pt\fancybook@epigraphposition]{%
+        \@ifmtarg{#3}{}{\epigraph{#3}{#4}}%
+    }%
+    \part{#2}%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================= CHAPTER STYLE ============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\ExplSyntaxOn
+\NewDocumentCommand{\fancybook@spreadchapter}{m}{\letter_spread_chapter:f{ #1 }}
+\cs_new_protected:Npn \letter_spread_chapter:n #1
+{\makebox[\chapterboxheight][s]{\tl_map_inline:nn { #1 } { ##1 \hfil } \unskip}}
+\cs_generate_variant:Nn \letter_spread_chapter:n { f }
+\ExplSyntaxOff
+%% -------------------------------------------------------------------------- %%
+\titleformat{\chapter}[display]{\normalfont\filcenter}{
+    \tikz[remember picture, overlay]{
+        \node[
+            fill = \chaptercolor,
+            font = \chapternumfont\color{white},
+            anchor = north east,
+            minimum width = \chapterboxwidth,
+            minimum height = \chapterboxheight,
+            align = center
+        ] at (current page text area.north east) (numb) {\thechapter};
+        \node[
+            rotate = 90,
+            anchor = south,
+            inner sep = 4pt,
+            font = \chapternamefont,
+        ] at (numb.west) {\fancybook@spreadchapter\chaptertitlename};
+    }
+}{\chapternamevskip}{
+    \fancybook@forgetparskip
+    \begingroup
+    \chapterfont\color{\chaptercolor}#1
+}[%
+    \Large$\bullet\bullet\bullet$
+    \endgroup
+    \vspace{\chaptertextspacing}
+    \fancybook@restoreparskip
+]
+%% -------------------------------------------------------------------------- %%
+\xpatchcmd{\ttl@printlist}{\endgroup}{{%
+    \par\vspace{-\smallskipamount}%
+    \noindent\color{\chaptercolor}\rule{\textwidth}{\chapterrule}%
+}\endgroup}{}{}
+%% -------------------------------------------------------------------------- %%
+\pretocmd{\section}{
+    \addtocontents{toc}{\protect\addvspace{\chaptertocsectionspacing}}
+}{}{}
+%% -------------------------------------------------------------------------- %%
+\newcommand\chaptertoc{%
+    \fancybook@forgetparskip{}%
+    \vspace{\dimexpr\chapterbeforetocvskip - \chaptertextspacing\relax}
+    \startcontents[chapters]
+    \begin{tcolorbox}[
+        enhanced,
+        sharp corners,
+        frame hidden,
+        boxrule = 0pt,
+        boxsep = 0pt,
+        colback = \chaptertoccolor,
+        top = 0pt,
+        bottom = 0pt,
+        left = 0pt,
+        right = 0pt,
+    ]
+    \parbox[t]{0.96\linewidth}{
+        \printcontents[chapters]{p}{1}{
+            \noindent{\color{\chaptercolor}\rule{\textwidth}{\chapterrule}}
+            \par\medskip\vspace{-\chaptertocsectionspacing}
+        }
+    }
+    \end{tcolorbox}
+    \vspace{\chapteraftertocvskip}
+    \fancybook@restoreparskip{}
+}
+%% -------------------------------------------------------------------------- %%
+\titlespacing{\chapter}{0pt}{0pt}{0pt}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================= SECTION STYLE ============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\titlespacing{\chapter}{0pt}{0pt}{0pt}
+\titlespacing{\section}{0pt}{
+    0.05\baselineskip plus 2pt minus 1pt
+}{0pt plus 2pt minus 2pt}
+\titlespacing{\subsection}{0pt}{
+    0.05\baselineskip plus 2pt minus 1pt
+}{0pt plus 2pt minus 2pt}
+\titlespacing{\subsubsection}{0pt}{
+    0.05\baselineskip plus 2pt minus 1pt
+}{0pt plus 2pt minus 2pt}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
