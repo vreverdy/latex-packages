@@ -11,6 +11,15 @@
 
 
 
+# =============================== CHECK IF SUDO ============================== #
+if [ "$EUID" -ne 0 ]
+    then echo "ERROR: Please run as root"
+    exit 1
+fi
+# ============================================================================ #
+
+
+
 # ========================== MOVE TO ROOT DIRECTORY ========================== #
 ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $ROOTDIR
