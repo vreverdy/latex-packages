@@ -1,0 +1,52 @@
+\documentclass[letterpaper, 10pt]{article}
+
+\usepackage{lipsum}
+\usepackage{lstbox}
+
+% Problem with framexleftmargin/margins
+\begin{document}
+\begin{cppbox}[\footnotesize]{This is some C++ code}{}{}
+// Main function
+int main(int argc, char* argv[])
+{
+    std::string hello = "hello";
+    return hello.size();
+}
+\end{cppbox}
+
+\begin{bashframe}[\footnotesize]{This is a terminal}{}{}
+# Some code
+cd hello
+rm world
+mkdir helloagain
+rm worldagain
+ls -lsrh
+\end{bashframe}
+
+% first column
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+\begin{cppbox}[\tiny]{This is some C++ code}{}{colframe = red}
+// Main function
+int main(int argc, char* argv[])
+{
+    std::string hello = "hello";
+    return hello.size();
+}
+\end{cppbox}
+\end{minipage}\hfill\begin{minipage}[t]{0.49\textwidth}
+\begin{cppbox}[\tiny]{This is some C++ code}{}{colframe = green}
+// Main function
+int main(int argc, char* argv[])
+{
+    std::string hello = "hello";
+    return hello.size();
+}
+\end{cppbox}
+\end{minipage}
+
+\end{document}
+
+
+
+

@@ -1,0 +1,380 @@
+%% =============================== FANCYPAPER =============================== %%
+%% Project:         fancypaper
+%% Name:            fancypaper.sty
+%% Description:     Layout an design commands for fancy scientific articles
+%% Author(s):       Vincent Reverdy [2019-]
+%% License:         LPPL-1.3c
+%% ========================================================================== %%
+%% Copyright 2019 V. Reverdy
+%% This work may be distributed and/or modified under the conditions of the
+%% LaTeX Project Public License, either version 1.3 of this license or any later
+%% version. The latest version of the license is in http://www.latex-project.org
+%% /lppl.txt and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% This work has the LPPL maintenance status `maintained'.
+%% The Current Maintainer of this work is V. Reverdy.
+%% ========================================================================== %%
+%% \fancypaperhypersetup{}
+%% \pagestyle{fancypaperstyle}
+%% ========================================================================== %%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{fancypaper}[2019/01/01 Fancy Paper]
+%% ========================================================================== %%
+
+
+
+%% ================================ PACKAGES ================================ %%
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{natbib}
+\RequirePackage{xcolor}
+\RequirePackage{ifmtarg}
+\RequirePackage{pgfopts}
+\RequirePackage{xifthen}
+\RequirePackage{enumitem}
+\RequirePackage{etoolbox}
+\RequirePackage{fancyhdr}
+\RequirePackage{lastpage}
+\RequirePackage{titletoc}
+\RequirePackage{xcolor-material}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage[style]{abstract}
+\RequirePackage[explicit]{titlesec}
+\RequirePackage[sf = false, tt = false]{libertine}
+%% -------------------------------------------------------------------------- %%
+\newlength{\defaultparskip}
+\newlength{\defaultparindent}
+\newlength{\defaultparfillskip}
+\setlength{\defaultparskip}{\parskip}
+\setlength{\defaultparindent}{\parindent}
+\setlength{\defaultparfillskip}{\parfillskip}
+\RequirePackage{parskip}
+%% ========================================================================== %%
+
+
+
+%% ================================ OPTIONS ================================= %%
+\pgfkeys{
+    /fancypaper/.cd,
+    % Information
+    papertitle/.store in = \papertitle,
+    papertitle = ,
+    paperdisplaytitle/.store in = \paperdisplaytitle,
+    paperdisplaytitle = \papertitle,
+    papershorttitle/.store in = \papershorttitle,
+    papershorttitle = \papertitle,
+    paperauthor/.store in = \paperauthor,
+    paperauthor = ,
+    papershortauthor/.store in = \papershortauthor,
+    papershortauthor = \paperauthor,
+    paperyear/.store in = \paperyear,
+    paperyear = \the\year,
+    papermonth/.store in = \papermonth,
+    papermonth = \the\month,
+    paperdate/.store in = \paperdate,
+    paperdate = \today,
+    papersubject/.store in = \papersubject,
+    papersubject = ,
+    paperkeywords/.store in = \paperkeywords,
+    paperkeywords = ,
+    % Pdf information
+    pdfauthor/.store in = \pdfauthor,
+    pdfauthor = \paperauthor,
+    pdftitle/.store in = \pdftitle,
+    pdftitle = \papertitle,
+    pdfsubject/.store in = \pdfsubject,
+    pdfsubject = \papersubject,
+    pdfkeywords/.store in = \pdfkeywords,
+    pdfkeywords = \paperkeywords,
+    pdfproducer/.store in = \pdfproducer,
+    pdfproducer = {LaTeX},
+    pdfcreator/.store in = \pdfcreator,
+    pdfcreator = {pdflatex},
+    % Main parameters
+    maincolor/.store in = \maincolor,
+    maincolor = MaterialIndigo900,
+    mainparskip/.store in = \mainparskip,
+    mainparskip = 0.5\baselineskip,
+    mainparindent/.store in = \mainparindent,
+    mainparindent = 0pt,
+    maincolumnsep/.store in = \maincolumnsep,
+    maincolumnsep = 1.5em,
+    % Page style
+    headfootleft/.store in = \headfootleft,
+    headfootleft = \papershorttitle,
+    headfootright/.store in = \headfootright,
+    headfootright = {\papershortauthor{} \paperyear{}},
+    headfootfont/.store in = \headfootfont,
+    headfootfont = \small\bf,
+    headfootcolor/.store in = \headfootcolor,
+    headfootcolor = MaterialGrey500,
+    % Section style
+    sectioncolor/.store in = \sectioncolor,
+    sectioncolor = black,
+    sectionfont/.store in = \sectionfont,
+    sectionfont = \Large\bfseries\scshape,
+    sectionbeforespacing/.store in = \sectionbeforespacing,
+    sectionbeforespacing = 0.25\baselineskip plus 0pt minus 0pt,
+    sectionafterspacing/.store in = \sectionafterspacing,
+    sectionafterspacing = -0.25\baselineskip plus 0pt minus 0pt,
+    % Subsection style
+    subsectioncolor/.store in = \subsectioncolor,
+    subsectioncolor = black,
+    subsectionfont/.store in = \subsectionfont,
+    subsectionfont = \large\bfseries\scshape,
+    subsectionbeforespacing/.store in = \subsectionbeforespacing,
+    subsectionbeforespacing = 0.05\baselineskip plus 0pt minus 0pt,
+    subsectionafterspacing/.store in = \subsectionafterspacing,
+    subsectionafterspacing = -0.25\baselineskip plus 0pt minus 0pt,
+    % Subsubsection style
+    subsubsectioncolor/.store in = \subsubsectioncolor,
+    subsubsectioncolor = black,
+    subsubsectionfont/.store in = \subsubsectionfont,
+    subsubsectionfont = \normalsize\bfseries\scshape,
+    subsubsectionbeforespacing/.store in = \subsubsectionbeforespacing,
+    subsubsectionbeforespacing = 0.05\baselineskip plus 0pt minus 0pt,
+    subsubsectionafterspacing/.store in = \subsubsectionafterspacing,
+    subsubsectionafterspacing = -0.25\baselineskip plus 0pt minus 0pt,
+    % Paragraph style
+    paragraphcolor/.store in = \paragraphcolor,
+    paragraphcolor = black,
+    paragraphfont/.store in = \paragraphfont,
+    paragraphfont = \normalsize,
+    paragraphbeforespacing/.store in = \paragraphbeforespacing,
+    paragraphbeforespacing = 0.05\baselineskip plus 0pt minus 0pt,
+    paragraphafterspacing/.store in = \paragraphafterspacing,
+    paragraphafterspacing = -0.25\baselineskip plus 0pt minus 0pt,
+    % Abstract style
+    abstractcolor/.store in = \abstractcolor,
+    abstractcolor = \subsectioncolor,
+    abstractfont/.store in = \abstractfont,
+    abstractfont = \subsectionfont,
+    abstractbeforespacing/.store in = \abstractbeforespacing,
+    abstractbeforespacing = 0pt,
+    abstractafterspacing/.store in = \abstractafterspacing,
+    abstractafterspacing = 0.75\baselineskip plus 0pt minus 0pt,
+}
+%% -------------------------------------------------------------------------- %%
+\ProcessPgfPackageOptions{/fancypaper}
+%% ========================================================================== %%
+
+
+
+%% ================================ COMMANDS ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancypaper@ifnotempty}[2]{\ifthenelse{\equal{#1}{}}{}{#2}}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancypaper@ifelsenotempty}[3]{\ifthenelse{\equal{#1}{}}{#2}{#3}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================= PARSKIP ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\setlength{\parskip}{\mainparskip}
+\setlength{\parindent}{\mainparindent}
+%% -------------------------------------------------------------------------- %%
+\newlength{\textsize}
+\setlength{\textsize}{\f@size pt}
+\newcommand{\fancypaper@forgetparskip}{\setlength{\parskip}{0pt}}
+\newcommand{\fancypaper@restoreparskip}{\setlength{\parskip}{\mainparskip}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================ DISTANCES =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\setlength{\columnsep}{\maincolumnsep}
+%% -------------------------------------------------------------------------- %%
+\setlength{\parskip}{\mainparskip}
+%% -------------------------------------------------------------------------- %%
+\setitemize{
+    itemsep = 0.5\parskip,
+    topsep = -0.5\parskip,
+    parsep = 0pt,
+    partopsep = 0pt
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================ HYPERREF ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancypaperhypersetup}{
+    \hypersetup{
+        pdfauthor = {\pdfauthor},
+        pdftitle = {\pdftitle},
+        pdfsubject = {\pdfsubject},
+        pdfkeywords = {\pdfkeywords},
+        pdfproducer = {\pdfproducer},
+        pdfcreator = {\pdfcreator},
+        colorlinks,
+        citecolor = blue,
+        filecolor = blue,
+        linkcolor = blue,
+        urlcolor = blue
+    }
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== PAGE STYLE =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancypaper@makeheadfoot}[1]{%
+    \textcolor{\headfootcolor}{\small\textsc{#1}}%
+}
+%% -------------------------------------------------------------------------- %%
+\fancypagestyle{fancypaperstyle}{
+    \fancyhf{}
+    \lhead{\fancypaper@makeheadfoot{\headfootleft}}
+    \rhead{\fancypaper@makeheadfoot{\headfootright}}
+    \cfoot{\fancypaper@makeheadfoot{Page \thepage{} of \pageref*{LastPage}}}
+    \fancypagestyle{plain}{
+        \fancyhf{}
+        \lhead{\fancypaper@makeheadfoot{\headfootleft}}
+        \rhead{\fancypaper@makeheadfoot{\headfootright}}
+        \cfoot{\fancypaper@makeheadfoot{Page \thepage{} of \pageref*{LastPage}}}
+        \renewcommand{\headrulewidth}{0.0pt}
+        \renewcommand{\footrulewidth}{0.0pt}
+    }
+    \renewcommand{\headrulewidth}{0.0pt}
+    \renewcommand{\footrulewidth}{0.0pt}
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================== TITLE STYLES ============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\titlespacing\section{0pt}{
+    \sectionbeforespacing
+}{\sectionafterspacing}
+\titleformat{\section}{
+    \sectionfont\color{\sectioncolor}
+}{\thesection}{1em}{#1}
+%% -------------------------------------------------------------------------- %%
+\titlespacing\subsection{0pt}{
+    \subsectionbeforespacing
+}{\subsectionafterspacing}
+\titleformat{\subsection}{
+    \subsectionfont\color{\subsectioncolor}
+}{\thesubsection}{1em}{#1}
+%% -------------------------------------------------------------------------- %%
+\titlespacing\subsubsection{0pt}{
+    \subsubsectionbeforespacing
+}{\subsubsectionafterspacing}
+\titleformat{\subsubsection}{
+    \subsubsectionfont\color{\subsubsectioncolor}
+}{\thesubsubsection}{1em}{#1}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================== MAKE AUTHOR =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\makeauthor}[3][\linewidth]{%
+    \begin{minipage}[c]{#1}%
+        \begin{center}%
+            \large\textsc{#2}%
+        \end{center}%
+    \end{minipage}%
+    \\%
+    \begin{minipage}[c]{#1}%
+        \begin{center}%
+            \smallskip%
+            \footnotesize\href{mailto:#3}{#3}%
+            \medskip%
+        \end{center}%
+    \end{minipage}%
+}
+%% -------------------------------------------------------------------------- %%
+\newenvironment{affiliation}[2][\linewidth]{%
+    \begingroup%
+        #2%
+        \begin{minipage}[c]{#1}%
+            \begin{center}%
+}{%
+            \end{center}%
+        \end{minipage}%
+    \endgroup%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== MAKE TITLE =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\title{\paperdisplaytitle}
+\author{\paperauthor}
+\date{\paperdate}
+%% -------------------------------------------------------------------------- %%
+\newcommand\setabstract[1]{\renewcommand\@abstract{\noindent{}#1}}
+\newcommand\@abstract{\@latex@error{No \noexpand\setabstract given}\@ehc}
+\renewcommand{\abstitlestyle}[1]{%
+    \vspace{\abstractbeforespacing}%
+    \centering\abstractfont\textcolor{\abstractcolor}{#1}%
+    \vspace{\abstractafterspacing}%
+}
+%% -------------------------------------------------------------------------- %%
+\def\@maketitle{%
+    \newpage%
+    \null%
+    ~{}%
+    \begin{minipage}{\textwidth}%
+        \bigskip\bigskip\bigskip%
+        \begin{center}\Huge\textsc{\@title}\end{center}%
+    \end{minipage}\\%
+    \begin{minipage}{\textwidth}%
+        \bigskip\bigskip%
+        \begin{center}{\@author}\end{center}%
+    \end{minipage}\\%
+    \begin{minipage}{\textwidth}%
+        \bigskip%
+        \begin{center}{\@date}\end{center}%
+    \end{minipage}\\%
+    \begin{minipage}{\textwidth}%
+        \bigskip\smallskip%
+        \begin{onecolabstract}%
+        \@abstract
+        \end{onecolabstract}%
+    \end{minipage}
+    \bigskip\bigskip%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== CITATION ================================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\let\oldcite\cite
+\renewcommand\cite[1]{[\oldcite{#1}]}
+\bibliographystyle{apalike}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%

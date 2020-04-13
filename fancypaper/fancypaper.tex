@@ -1,0 +1,64 @@
+\documentclass[a4paper, 10pt, twocolumn]{article}
+\usepackage[
+    left = 2cm,
+    right = 2cm,
+    top = 2cm,
+    bottom = 2.5cm,
+    headsep = \baselineskip,
+]{geometry}
+\usepackage[
+    papertitle = {{This is a title}},
+    paperauthor = {{Vincent Reverdy}},
+    papershortauthor = {{Reverdy}},
+]{fancypaper}
+\usepackage{lipsum}
+\usepackage{printlen}
+\usepackage{hyperref}
+
+\title{This is a title}
+\author{%
+\begin{tabular}{cc}
+\makeauthor[0.45\linewidth]{Vincent Reverdy}{vince.rev@gmail.com}
+&
+\makeauthor[0.45\linewidth]{Jo\"el Falcou}{joel.falcou@lri.fr}
+\\
+\begin{affiliation}[0.45\linewidth]
+Department of Astronomy,
+University of Illinois at Urbana-Champaign
+\\
+Urbana-Champaign, Illinois, USA
+\\
+LUTH,
+CNRS UMR 8102,
+Observatoire de Paris,
+Universit\'e Paris-Diderot,
+PSL Research University
+\\
+Meudon, France
+\end{affiliation}
+&
+\begin{affiliation}[0.45\linewidth]
+Laboratoire de Recherche en Informatique\\
+CNRS UMR 8623\\
+Universit\'e Paris-Sud XI\\
+Orsay, France
+\end{affiliation}
+\end{tabular}
+%
+}
+\setabstract{This is an abstract of a given paper. \lipsum[1]}
+\pagestyle{fancypaperstyle}
+\fancypaperhypersetup{}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+\lipsum[1]
+\section{Section A}
+\lipsum[1]
+\section{Section B}
+\lipsum[1]
+\section{Section C}
+\lipsum[1]
+\end{document}
+

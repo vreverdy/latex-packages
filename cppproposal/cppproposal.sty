@@ -1,0 +1,236 @@
+%% =============================== CPPPROPOSAL ============================== %%
+%% Project:         cppproposal
+%% Name:            cppproposal.sty
+%% Description:     Commands to help the writing of C++ proposals
+%% Author(s):       Vincent Reverdy [2019-]
+%% License:         LPPL-1.3c
+%% ========================================================================== %%
+%% Copyright 2019 V. Reverdy
+%% This work may be distributed and/or modified under the conditions of the
+%% LaTeX Project Public License, either version 1.3 of this license or any later
+%% version. The latest version of the license is in http://www.latex-project.org
+%% /lppl.txt and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% This work has the LPPL maintenance status `maintained'.
+%% The Current Maintainer of this work is V. Reverdy.
+%% ========================================================================== %%
+
+
+
+%% ========================================================================== %%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{cppproposal}[2019/01/01 C++ Proposal]
+%% ========================================================================== %%
+
+
+
+%% ================================ PACKAGES ================================ %%
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{pgfopts}
+\RequirePackage{xifthen}
+\RequirePackage{fancyhdr}
+\RequirePackage{pdfpages}
+\RequirePackage{filecontents}
+\RequirePackage{xcolor-material}
+\RequirePackage[explicit]{titlesec}
+%% -------------------------------------------------------------------------- %%
+\newlength{\defaultparskip}
+\newlength{\defaultparindent}
+\newlength{\defaultparfillskip}
+\setlength{\defaultparskip}{\parskip}
+\setlength{\defaultparindent}{\parindent}
+\setlength{\defaultparfillskip}{\parfillskip}
+\RequirePackage{parskip}
+%% ========================================================================== %%
+
+
+
+%% ================================ OPTIONS ================================= %%
+\pgfkeys{
+    /cppproposal/.cd,
+    % Information
+    proposalnumber/.store in = \proposalnumber,
+    proposalnumber = ,
+    proposalrevises/.store in = \proposalrevises,
+    proposalrevises = ,
+    proposalreviseslink/.store in = \proposalreviseslink,
+    proposalreviseslink = ,
+    proposaldate/.store in = \proposaldate,
+    proposaldate = ,
+    proposalproject/.store in = \proposalproject,
+    proposalproject = {ISO/IEC JTC1/SC22/WG21 - Programming Language C++},
+    proposalaudience/.store in = \proposalaudience,
+    proposalaudience = ,
+    proposalauthor/.store in = \proposalauthor,
+    proposalauthor = ,
+    proposalaffiliation/.store in = \proposalaffiliation,
+    proposalaffiliation = ,
+    proposalemail/.store in = \proposalemail,
+    proposalemail = ,
+    proposaltitle/.store in = \proposaltitle,
+    proposaltitle = ,
+    proposaltitle/.store in = \proposaltitle,
+    proposaltitle = ,
+    proposalauthor/.store in = \proposalauthor,
+    proposalauthor = ,
+    proposalemail/.store in = \proposalemail,
+    proposalemail = ,
+    proposalfulltitle/.store in = \proposalfulltitle,
+    proposalfulltitle = {\proposalnumber: \proposaltitle},
+    % Pdf information
+    pdfauthor/.store in = \pdfauthor,
+    pdfauthor = \proposalauthor,
+    pdftitle/.store in = \pdftitle,
+    pdftitle = \proposalfulltitle,
+    pdfsubject/.store in = \pdfsubject,
+    pdfsubject = \proposalproject,
+    pdfkeywords/.store in = \pdfkeywords,
+    pdfkeywords = ,
+    pdfproducer/.store in = \pdfproducer,
+    pdfproducer = {LaTeX},
+    pdfcreator/.store in = \pdfcreator,
+    pdfcreator = {pdflatex},
+    % Paragraph
+    proposalparskip/.store in = \proposalparskip,
+    proposalparskip = 0.25\baselineskip plus 2pt,
+    proposalparindent/.store in = \proposalparindent,
+    proposalparindent = 0pt,
+    % Page style
+    headfootfont/.store in = \headfootfont,
+    headfootfont = \small\bf,
+    headfootcolor/.store in = \headfootcolor,
+    headfootcolor = MaterialGrey500,
+}
+%% -------------------------------------------------------------------------- %%
+\ProcessPgfPackageOptions{/cppproposal}
+%% ========================================================================== %%
+
+
+
+%% ================================ COMMANDS ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\cppproposal@ifnotempty}[2]{\ifthenelse{\equal{#1}{}}{}{#2}}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\cppproposal@ifelsenotempty}[3]{\ifthenelse{\equal{#1}{}}{#2}{#3}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================= PARSKIP ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\setlength{\parskip}{\proposalparskip}
+\setlength{\parindent}{\proposalparindent}
+%% -------------------------------------------------------------------------- %%
+\newlength{\textsize}
+\setlength{\textsize}{\f@size pt}
+\newcommand{\cppproposal@forgetparskip}{\setlength{\parskip}{0pt}}
+\newcommand{\cppproposal@restoreparskip}{\setlength{\parskip}{\proposalparskip}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ============================= INFORMATION BOX ============================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\cppmakeinfo}{%
+    \begingroup%
+        \def\infobox{%
+            \begin{tabular}{ll}%
+                \cppproposal@ifnotempty{\proposalnumber}{%
+                    \textbf{Document number:} & \proposalnumber\\%
+                }%
+                \cppproposal@ifnotempty{\proposalrevises}{%
+                    \textbf{Revises:} &%
+                    \cppproposal@ifelsenotempty{\proposalreviseslink}{%
+                        \proposalrevises%
+                    }{%
+                        \href{\proposalreviseslink}{\proposalrevises}%
+                    }\\%
+                }%
+                \cppproposal@ifnotempty{\proposaldate}{%
+                    \textbf{Date:} & \proposaldate\\%
+                }%
+                \cppproposal@ifnotempty{\proposalproject}{%
+                    \textbf{Project:} & \proposalproject\\%
+                }%
+                \cppproposal@ifnotempty{\proposalaudience}{%
+                    \textbf{Audience:} & \proposalaudience\\%
+                }%
+                \cppproposal@ifnotempty{\proposalauthor}{%
+                    \textbf{Reply to:} & \proposalauthor\\%
+                    \cppproposal@ifnotempty{\proposalaffiliation}{%
+                        & \proposalaffiliation
+                    }%
+                    \cppproposal@ifnotempty{\proposalemail}{%
+                        & \href{mailto:\proposalemail}{proposalemail}
+                    }%
+                }%
+            \end{tabular}
+        }%
+        \newlength{\infoboxwidth}%
+        \settowidth{\infoboxwidth}{\infobox}%
+        \begin{minipage}{\infoboxwidth}\infobox\end{minipage}%
+    \endgroup%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================ HYPERREF ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\cpphypersetup}{
+    \hypersetup{
+        pdfauthor = {\pdfauthor},
+        pdftitle = {\pdftitle},
+        pdfsubject = {\pdfsubject},
+        pdfkeywords = {\pdfkeywords},
+        pdfproducer = {\pdfproducer},
+        pdfcreator = {\pdfcreator},
+        colorlinks,
+        citecolor = blue,
+        filecolor = blue,
+        linkcolor = blue,
+        urlcolor = blue
+    }
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== PAGE STYLE =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\cppproposal@makeheadfoot}[1]{%
+    \headfootfont\selectfont\color{\headfootcolor}#1%
+}
+%% -------------------------------------------------------------------------- %%
+\fancypagestyle{cppproposalps}{
+    \fancyhf{}
+    \fancyhead[L]{\cppproposal@makeheadfoot{\proposalfulltitle}}
+    \fancyhead[R]{\cppproposal@makeheadfoot{\proposalauthor}}
+    \fancyfoot[C]{\cppproposal@makeheadfoot{\thepage}}
+    \renewcommand{\headrulewidth}{0.0pt}
+    \renewcommand{\footrulewidth}{0.0pt}
+}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\cppproposalpagestyle}{
+    \pagestyle{cppproposalps}
+    \renewcommand\@mkboth[2]{\markboth{##1}{}}
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+

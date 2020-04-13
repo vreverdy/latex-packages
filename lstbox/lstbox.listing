@@ -1,0 +1,6 @@
+// Main function
+int main(int argc, char* argv[])
+{
+    std::string hello = "hello";
+    return hello.size();
+}

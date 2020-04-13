@@ -1,0 +1,32 @@
+\contentsline {part}{I\hspace {1em}First part}{1}
+\contentsline {chapter}{\numberline {1}First chapter}{7}
+\ttl@starttoc {chapters@1}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {1.1}Second section}{7}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {1.2}Third secpion}{8}
+\contentsline {chapter}{\numberline {2}First chapter}{9}
+\contentsline {part}{II\hspace {1em}Second part}{11}
+\contentsline {chapter}{\numberline {3}Second chapter}{15}
+\ttl@stoptoc {chapters@1}
+\ttl@starttoc {chapters@2}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {3.1}First section}{15}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {3.2}Second section}{16}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {3.3}Third section}{16}
+\contentsline {subsection}{\numberline {3.3.1}Second subsection}{16}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {3.4}Second section}{18}
+\contentsline {subsection}{\numberline {3.4.1}First subsection}{18}
+\contentsline {subsection}{\numberline {3.4.2}Second subsection}{19}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {3.5}Third section}{21}
+\contentsline {subsection}{\numberline {3.5.1}First subsection}{21}
+\contentsline {subsection}{\numberline {3.5.2}Second subsection}{22}
+\addvspace {\smallskipamount }
+\contentsline {section}{\numberline {3.6}Fourth section}{24}
+\contentsline {subsection}{\numberline {3.6.1}First subsection}{24}
+\contentsline {subsection}{\numberline {3.6.2}Second subsection}{25}
+\contentsfinish 

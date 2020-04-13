@@ -66,6 +66,9 @@
 %% \begin{bashframe*}[\tiny]{Title}{extralstoptions}{extratcboptions}
 %% -------------------------------------------------------------------------- %%
 %% \lstinline[options]`code`
+%% -------------------------------------------------------------------------- %%
+%% \codeline{n}
+%% \coderef{label}
 %% ========================================================================== %%
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{lstbox}[2019/01/01 Boxed Listings]
@@ -77,6 +80,7 @@
 \RequirePackage{calc}
 \RequirePackage{xcolor}
 \RequirePackage{ifmtarg}
+\RequirePackage{xifthen}
 \RequirePackage{pgfopts}
 \RequirePackage{listings}
 \RequirePackage{multicol}
@@ -210,10 +214,25 @@
     inlinekeywordcolor = \keywordcolor,
     inlinecommentcolor/.store in = \inlinecommentcolor,
     inlinecommentcolor = \inlinecommentcolor,
+    % Extra
+    coderefcolor/.store in = \coderefcolor,
+    coderefcolor = ,
 }
 
 %% -------------------------------------------------------------------------- %%
 \ProcessPgfPackageOptions{/lstbox}
+%% ========================================================================== %%
+
+
+
+%% ================================ COMMANDS ================================ %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@ifnotempty}[2]{\ifthenelse{\equal{#1}{}}{}{#2}}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\lstbox@ifelsenotempty}[3]{\ifthenelse{\equal{#1}{}}{#2}{#3}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
 %% ========================================================================== %%
 
 
@@ -500,6 +519,7 @@
     keywordstyle = \color{\keywordcolor},
     commentstyle = \color{\commentcolor},
     backgroundcolor = \color{\backgroundcolor},
+    escapechar = `,
 }
 %% -------------------------------------------------------------------------- %%
 \lstdefinestyle{listingstyle*}{
@@ -523,6 +543,7 @@
     keywordstyle = \color{\keywordcolor},
     commentstyle = \color{\commentcolor},
     backgroundcolor = ,
+    escapechar = `,
 }
 %% -------------------------------------------------------------------------- %%
 \lstdefinestyle{blocklistingstyle*}{
@@ -546,6 +567,7 @@
     keywordstyle = \color{\keywordcolor},
     commentstyle = \color{\commentcolor},
     backgroundcolor = ,
+    escapechar = `,
 }
 %% -------------------------------------------------------------------------- %%
 \lstdefinestyle{boxlistingstyle*}{
@@ -570,6 +592,7 @@
     commentstyle = \color{\commentcolor},
     backgroundcolor = ,
     multicols = 2,
+    escapechar = `,
 }
 %% -------------------------------------------------------------------------- %%
 \lstdefinestyle{framelistingstyle*}{
@@ -1533,7 +1556,7 @@
     \lstbox@computealignment{#1}%
     \lstset{
         style = listingstyle,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         numbersep = \lstbox@numbersep,
         xleftmargin = \lstbox@xleftmargin,
@@ -1546,7 +1569,7 @@
     \lstbox@computealignment{#1}%
     \lstset{
         style = listingstyle*,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         xleftmargin = \lstbox@numbersep,
         framexleftmargin = \lstbox@numbersep,
@@ -1561,7 +1584,7 @@
     right = \lstbox@blockright,
     listing options = {
         style = blocklistingstyle,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         numbers = left,
         numberstyle = \lstbox@blocknumberstyle,
@@ -1580,7 +1603,7 @@
     code = {\lstbox@computeblockalignment{#1}},
     listing options = {
         style = blocklistingstyle*,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         xleftmargin = 0.5\lstbox@numwidth,
         framexleftmargin = 0.5\lstbox@numwidth,
@@ -1599,7 +1622,7 @@
     }{-\lstbox@boxleft + \lstbox@boxright},
     listing options = {
         style = boxlistingstyle,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         numbers = left,
         numberstyle = \lstbox@boxnumberstyle,
@@ -1621,7 +1644,7 @@
     }{0pt},
     listing options = {
         style = boxlistingstyle*,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         xleftmargin = 0.5\lstbox@numwidth,
         framexleftmargin = 0.5\lstbox@numwidth,
@@ -1640,7 +1663,7 @@
     }{#2}{-\lstbox@frameleft + \lstbox@frameright},
     listing options = {
         style = framelistingstyle,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         numbers = left,
         numberstyle = \lstbox@framenumberstyle,
@@ -1668,7 +1691,7 @@
     }{#2}{-0.5\lstbox@framealtleft + 0.5\lstbox@framealtright},
     listing options = {
         style = framelistingstyle*,
-        language = [20]C++,
+        language = C++,
         basicstyle = \lstbox@makefont{\fontcolor}{#1},
         #3,
     },
@@ -1845,10 +1868,30 @@
     tabsize = \inlinetabsize,
     keywordstyle = \color{\inlinekeywordcolor},
     commentstyle = \color{\inlinecommentcolor},
+    escapechar = @,
 }
 %% -------------------------------------------------------------------------- %%
 \lstset{
     style = inlinestyle,
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== REFERENCES =============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\codeline}[1]{\texttt{#1}}
+%% -------------------------------------------------------------------------- %%
+\newcommand*{\coderef}[2][\coderefcolor]{%
+    \lstbox@ifelsenotempty{#1}{%
+        \colorlet{lstboxcoderefcolor}{.}%
+    }{%
+        \colorlet{lstboxcoderefcolor}{#1}%
+    }%
+    \hyperref[#2]{\textcolor{lstboxcoderefcolor}{\texttt{\ref*{#2}}}}%
 }
 %% -------------------------------------------------------------------------- %%
 \makeatother
