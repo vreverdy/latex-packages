@@ -1,0 +1,427 @@
+%% =============================== FANCYBLOCK =============================== %%
+%% Project:         fancyblock
+%% Name:            fancyblock.sty
+%% Description:     Fancy colored boxes
+%% Author(s):       Vincent Reverdy [2021-]
+%% License:         LPPL-1.3c
+%% ========================================================================== %%
+%% Copyright 2021 V. Reverdy
+%% This work may be distributed and/or modified under the conditions of the
+%% LaTeX Project Public License, either version 1.3 of this license or any later
+%% version. The latest version of the license is in http://www.latex-project.org
+%% /lppl.txt and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% This work has the LPPL maintenance status `maintained'.
+%% The Current Maintainer of this work is V. Reverdy.
+%% ========================================================================== %%
+%% The package includes:
+%% - 3 color themes: medium (default), light (light), and dark (dark)
+%% - 4 layouts: listing (default), block (block), boxed (box), 2-columns (frame)
+%% - 2 numbering options: numbered (default), and un-numbered listings (*)
+%% -------------------------------------------------------------------------- %%
+%% \begin{fancyblock}[blue]{Title}
+%% \begin{fancylist}
+%% \end{fancylist}
+%% \end{fancyblock}
+%% ========================================================================== %%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{fancyblock}[2021/11/01 Fancy Blocks]
+%% ========================================================================== %%
+
+
+
+%% ================================ PACKAGES ================================ %%
+\RequirePackage{ifmtarg}
+\RequirePackage{pgfopts}
+\RequirePackage{enumitem}
+\RequirePackage{etoolbox}
+\RequirePackage{MnSymbol}
+\RequirePackage{xcolor-material}
+\RequirePackage[most]{tcolorbox}
+%% ========================================================================== %%
+
+
+
+%% ================================ OPTIONS ================================= %%
+\pgfkeys{
+    % Main
+    /fancyblock/.cd,
+    % Coloring
+    defaultcolor/.store in = \defaultcolor,
+    defaultcolor = black,
+    titlecolor/.store in = \titlecolor,
+    titlecolor = white,
+    % Items
+    firstlabel/.store in = \firstlabel,
+    firstlabel = $\filledsquare$,
+    secondlabel/.store in = \secondlabel,
+    secondlabel = $\bullet$,
+    % Geometry
+    boxrule/.store in = \boxrule,
+    boxrule = 0.15em,
+    titlerule/.store in = \titlerule,
+    titlerule = 0pt,
+    boxsep/.store in = \boxsep,
+    boxsep = 0.24em,
+    vtitlemargin/.store in = \vtitlemargin,
+    vtitlemargin = -0.08em,
+    toptitle/.store in = \toptitle,
+    toptitle = \vtitlemargin,
+    bottomtitle/.store in = \bottomtitle,
+    bottomtitle = \vtitlemargin,
+    margin/.store in = \margin,
+    margin = 0.8em,
+    vmargin/.store in = \vmargin,
+    vmargin = 0.4em,
+    hmargin/.store in = \hmargin,
+    hmargin = 0.8em,
+    top/.store in = \top,
+    top = \vmargin,
+    bottom/.store in = \bottom,
+    bottom = \vmargin,
+    left/.store in = \left,
+    left = \hmargin,
+    right/.store in = \right,
+    right = \hmargin,
+    middle/.store in = \middle,
+    middle = \vmargin,
+    % Normal geometry
+    normalboxrule/.store in = \normalboxrule,
+    normalboxrule = \boxrule,
+    normaltitlerule/.store in = \normaltitlerule,
+    normaltitlerule = \titlerule,
+    normalboxsep/.store in = \normalboxsep,
+    normalboxsep = \boxsep,
+    normalvtitlemargin/.store in = \normalvtitlemargin,
+    normalvtitlemargin = \vtitlemargin,
+    normaltoptitle/.store in = \normaltoptitle,
+    normaltoptitle = \toptitle,
+    normalbottomtitle/.store in = \normalbottomtitle,
+    normalbottomtitle = \bottomtitle,
+    normalmargin/.store in = \normalmargin,
+    normalmargin = \margin,
+    normalvmargin/.store in = \normalvmargin,
+    normalvmargin = \vmargin,
+    normalhmargin/.store in = \normalhmargin,
+    normalhmargin = \hmargin,
+    normaltop/.store in = \normaltop,
+    normaltop = \top,
+    normalmiddle/.store in = \normalmiddle,
+    normalmiddle = \middle,
+    normalbottom/.store in = \normalbottom,
+    normalbottom = \bottom,
+    normalleft/.store in = \normalleft,
+    normalleft = \left,
+    normalright/.store in = \normalright,
+    normalright = \right,
+    normaltopsep/.store in = \normaltopsep,
+    normaltopsep = 0.25em,
+    normalpartopsep/.store in = \normalpartopsep,
+    normalpartopsep = 0.2em,
+    normalparsep/.store in = \normalparsep,
+    normalparsep = 0pt,
+    normalitemsep/.store in = \normalitemsep,
+    normalitemsep = 0.25em,
+    % Tight geometry
+    tightboxrule/.store in = \tightboxrule,
+    tightboxrule = 0.15em,
+    tighttitlerule/.store in = \tighttitlerule,
+    tighttitlerule = 0pt,
+    tightboxsep/.store in = \tightboxsep,
+    tightboxsep = 0.24em,
+    tightvtitlemargin/.store in = \tightvtitlemargin,
+    tightvtitlemargin = -0.1em,
+    tighttoptitle/.store in = \tighttoptitle,
+    tighttoptitle = \tightvtitlemargin,
+    tightbottomtitle/.store in = \tightbottomtitle,
+    tightbottomtitle = \tightvtitlemargin,
+    tightmargin/.store in = \tightmargin,
+    tightmargin = 0.4em,
+    tightvmargin/.store in = \tightvmargin,
+    tightvmargin = 0.2em,
+    tighthmargin/.store in = \tighthmargin,
+    tighthmargin = 0.4em,
+    tighttop/.store in = \tighttop,
+    tighttop = \tightvmargin,
+    tightmiddle/.store in = \tightmiddle,
+    tightmiddle = \tightvmargin,
+    tightbottom/.store in = \tightbottom,
+    tightbottom = \tightvmargin,
+    tightleft/.store in = \tightleft,
+    tightleft = \tighthmargin,
+    tightright/.store in = \tightright,
+    tightright = \tighthmargin,
+    tighttopsep/.store in = \tighttopsep,
+    tighttopsep = 0.2em,
+    tightpartopsep/.store in = \tightpartopsep,
+    tightpartopsep = 0pt,
+    tightparsep/.store in = \tightparsep,
+    tightparsep = 0pt,
+    tightitemsep/.store in = \tightitemsep,
+    tightitemsep = 0.2em,
+    % Loose geometry
+    looseboxrule/.store in = \looseboxrule,
+    looseboxrule = 0.15em,
+    loosetitlerule/.store in = \loosetitlerule,
+    loosetitlerule = 0pt,
+    looseboxsep/.store in = \looseboxsep,
+    looseboxsep = 0.28em,
+    loosevtitlemargin/.store in = \loosevtitlemargin,
+    loosevtitlemargin = 0pt,
+    loosetoptitle/.store in = \loosetoptitle,
+    loosetoptitle = \loosevtitlemargin,
+    loosebottomtitle/.store in = \loosebottomtitle,
+    loosebottomtitle = \loosevtitlemargin,
+    loosemargin/.store in = \loosemargin,
+    loosemargin = 1.0em,
+    loosevmargin/.store in = \loosevmargin,
+    loosevmargin = 0.5em,
+    loosehmargin/.store in = \loosehmargin,
+    loosehmargin = 1.0em,
+    loosetop/.store in = \loosetop,
+    loosetop = \loosevmargin,
+    loosemiddle/.store in = \loosemiddle,
+    loosemiddle = \loosevmargin,
+    loosebottom/.store in = \loosebottom,
+    loosebottom = \loosevmargin,
+    looseleft/.store in = \looseleft,
+    looseleft = \loosehmargin,
+    looseright/.store in = \looseright,
+    looseright = \loosehmargin,
+    loosetopsep/.store in = \loosetopsep,
+    loosetopsep = 0.5em,
+    loosepartopsep/.store in = \loosepartopsep,
+    loosepartopsep = 0.25em,
+    looseparsep/.store in = \looseparsep,
+    looseparsep = 0pt,
+    looseitemsep/.store in = \looseitemsep,
+    looseitemsep = 0.5em,
+}
+%% -------------------------------------------------------------------------- %%
+\ProcessPgfPackageOptions{/fancyblock}
+%% ========================================================================== %%
+
+
+
+%% ================================== TITLE ================================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancyblock@maketitle}[1]{%
+    \@ifmtarg{#1}{}{\textcolor{\titlecolor}{#1\strut}}%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================= COLORS ================================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancyblock@selectcolor}[1]{%
+    \definecolor{fancyblock@lightcolor}{named}{MaterialGrey50}%
+    \definecolor{fancyblock@midcolor}{named}{MaterialGrey500}%
+    \definecolor{fancyblock@darkcolor}{named}{MaterialBlack}%
+    \ifstrequal{#1}{black}{%
+        \definecolor{fancyblock@lightcolor}{named}{MaterialGrey50}%
+        \definecolor{fancyblock@midcolor}{named}{MaterialGrey500}%
+        \definecolor{fancyblock@darkcolor}{named}{MaterialBlack}%
+    }{}%
+    \ifstrequal{#1}{blue}{%
+        \definecolor{fancyblock@lightcolor}{named}{MaterialIndigo50}%
+        \definecolor{fancyblock@midcolor}{named}{MaterialIndigo500}%
+        \definecolor{fancyblock@darkcolor}{named}{MaterialIndigo900}%
+    }{}%
+    \ifstrequal{#1}{red}{%
+        \definecolor{fancyblock@lightcolor}{named}{MaterialRed50}%
+        \definecolor{fancyblock@midcolor}{named}{MaterialRed500}%
+        \definecolor{fancyblock@darkcolor}{named}{MaterialRed900}%
+    }{}%
+    \ifstrequal{#1}{green}{% 
+        \definecolor{fancyblock@lightcolor}{named}{MaterialGreen50}%
+        \definecolor{fancyblock@midcolor}{named}{MaterialGreen500}%
+        \definecolor{fancyblock@darkcolor}{named}{MaterialGreen900}%
+    }{}%
+    \ifstrequal{#1}{yellow}{% 
+        \definecolor{fancyblock@lightcolor}{named}{MaterialAmber50}%
+        \definecolor{fancyblock@midcolor}{named}{MaterialAmber500}%
+        \definecolor{fancyblock@darkcolor}{named}{MaterialAmber900}%
+    }{}%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================== LISTS ================================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newlist{fancylist}{itemize}{2}
+%% -------------------------------------------------------------------------- %%
+\newcommand{\fancyblock@setlist}[2][normal]{%
+    \ifstrequal{#1}{normal}{%
+        \setlist[fancylist]{
+            labelsep = 0.5em,
+            topsep = \normaltopsep, 
+            partopsep = \normalpartopsep, 
+            parsep = \normalparsep, 
+            itemsep = \normalitemsep,
+        }%
+        \setlist[fancylist, 1]{
+            label = \textcolor{#2}{\firstlabel},
+            left = 0pt,
+            leftmargin = *,
+        }%
+        \setlist[fancylist, 2]{
+            label = \textcolor{#2}{\secondlabel},
+            left = 0.5em,
+            leftmargin = *,
+        }%
+    }{}%
+    \ifstrequal{#1}{tight}{%
+        \setlist[fancylist]{
+            labelsep = 0.5em,
+            topsep = \tighttopsep, 
+            partopsep = \tightpartopsep, 
+            parsep = \tightparsep, 
+            itemsep = \tightitemsep,
+        }%
+        \setlist[fancylist, 1]{
+            label = \textcolor{#2}{\firstlabel},
+            left = 0.25em,
+            leftmargin = *,
+        }%
+        \setlist[fancylist, 2]{
+            label = \textcolor{#2}{\secondlabel},
+            left = 0.25em,
+            leftmargin = *,
+        }%
+    }{}%
+    \ifstrequal{#1}{loose}{%
+        \setlist[fancylist]{
+            labelsep = 0.5em,
+            topsep = \loosetopsep, 
+            partopsep = \loosepartopsep, 
+            parsep = \looseparsep, 
+            itemsep = \looseitemsep,
+        }%
+        \setlist[fancylist, 1]{
+            label = \textcolor{#2}{\firstlabel},
+            left = 0pt,
+            leftmargin = *,
+        }%
+        \setlist[fancylist, 2]{
+            label = \textcolor{#2}{\secondlabel},
+            left = 0.75em,
+            leftmargin = *,
+        }%
+    }{}%
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================= STYLES ================================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\tcbset{fancyblockstyle/.style = {
+    enhanced,
+    breakable,
+    sharp corners,
+    center title,
+    boxrule = \normalboxrule,
+    titlerule = \normaltitlerule,
+    boxsep = \normalboxsep,
+    toptitle = \normaltoptitle,
+    bottomtitle = \normalbottomtitle,
+    top = \normaltop,
+    middle = \normalmiddle,
+    bottom = \normalbottom,
+    left = \normalleft,
+    right = \normalright,
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{fancyblockstyle*/.style = {
+    fancyblockstyle,
+    boxrule = \tightboxrule,
+    titlerule = \tighttitlerule,
+    boxsep = \tightboxsep,
+    toptitle = \tighttoptitle,
+    bottomtitle = \tightbottomtitle,
+    top = \tighttop,
+    middle = \tightmiddle,
+    bottom = \tightbottom,
+    left = \tightleft,
+    right = \tightright,
+}}
+%% -------------------------------------------------------------------------- %%
+\tcbset{fancyblockstyle+/.style = {
+    fancyblockstyle,
+    boxrule = \looseboxrule,
+    titlerule = \loosetitlerule,
+    boxsep = \looseboxsep,
+    toptitle = \loosetoptitle,
+    bottomtitle = \loosebottomtitle,
+    top = \loosetop,
+    middle = \loosemiddle,
+    bottom = \loosebottom,
+    left = \looseleft,
+    right = \looseright,
+}}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% ================================== BLOCKS ================================= %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newtcolorbox{fancyblock}[2][\defaultcolor]{
+    fancyblockstyle,
+    code = {%
+        \fancyblock@selectcolor{#1}%
+        \fancyblock@setlist{fancyblock@midcolor}%
+    },
+    colback = fancyblock@lightcolor,
+    colframe = fancyblock@darkcolor,
+    title = \fancyblock@maketitle{#2},
+    titlerule = \@ifmtarg{#2}{0pt}{\normaltitlerule},
+    toptitle = \@ifmtarg{#2}{-\normalboxsep}{\normaltoptitle},
+    bottomtitle = \@ifmtarg{#2}{-\normalboxsep}{\normalbottomtitle},
+}
+%% -------------------------------------------------------------------------- %%
+\newtcolorbox{fancyblock*}[2][\defaultcolor]{
+    fancyblockstyle*,
+    code = {%
+        \fancyblock@selectcolor{#1}%
+        \fancyblock@setlist[tight]{fancyblock@midcolor}%
+    },
+    colback = fancyblock@lightcolor,
+    colframe = fancyblock@darkcolor,
+    title = \fancyblock@maketitle{#2},
+    titlerule = \@ifmtarg{#2}{0pt}{\tighttitlerule},
+    toptitle = \@ifmtarg{#2}{-\tightboxsep}{\tighttoptitle},
+    bottomtitle = \@ifmtarg{#2}{-\tightboxsep}{\tightbottomtitle},
+}
+%% -------------------------------------------------------------------------- %%
+\newtcolorbox{fancyblock+}[2][\defaultcolor]{
+    fancyblockstyle+,
+    code = {%
+        \fancyblock@selectcolor{#1}%
+        \fancyblock@setlist[loose]{fancyblock@midcolor}%
+    },
+    colback = fancyblock@lightcolor,
+    colframe = fancyblock@darkcolor,
+    title = \fancyblock@maketitle{#2},
+    titlerule = \@ifmtarg{#2}{0pt}{\loosetitlerule},
+    toptitle = \@ifmtarg{#2}{-\looseboxsep}{\loosetoptitle},
+    bottomtitle = \@ifmtarg{#2}{-\looseboxsep}{\loosebottomtitle},
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+

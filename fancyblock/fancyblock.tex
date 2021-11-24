@@ -1,0 +1,173 @@
+\documentclass[a4paper, 10pt]{extarticle}
+\usepackage{fancyblock}
+\usepackage{lipsum}
+\usepackage{libertine}
+\usepackage[
+    left = 1.5cm,
+    right = 1.5cm,
+    top = 2cm,
+    bottom = 2.5cm,
+    headsep = \baselineskip,
+]{geometry}
+
+
+\begin{document}
+\lipsum[1]
+\begin{fancyblock}[blue]{}
+\end{fancyblock}
+\lipsum[1]
+
+\newpage
+
+\lipsum[1]
+\begin{fancyblock}[blue]{}
+\lipsum[1]
+\end{fancyblock}
+\lipsum[1]
+
+\newpage
+
+\lipsum[1]
+\begin{fancyblock}[blue]{Title \"Ag}
+\lipsum[1]
+\end{fancyblock}
+\lipsum[1]
+\begin{fancyblock*}[blue]{Title \"Ag}
+\lipsum[1]
+\end{fancyblock*}
+\lipsum[1]
+\begin{fancyblock+}[blue]{Title \"Ag}
+\lipsum[1]
+\end{fancyblock+}
+\lipsum[1]
+
+\begin{tcolorbox}[title = {Title \"Ag}]
+\lipsum[1]
+\end{tcolorbox}
+
+\newpage
+
+\lipsum[1]
+\begin{fancyblock}[blue]{Title \"Ag}
+\lipsum[1]
+\end{fancyblock}
+\lipsum[1]
+
+\newpage
+
+\lipsum[1]
+\begin{fancyblock}[blue]{Title \"Ag}
+\lipsum[1]
+\begin{fancylist}
+\item This is the first item
+\end{fancylist}
+\lipsum[1]
+\end{fancyblock}
+\lipsum[1]
+
+\newpage
+
+\lipsum[1]
+\begin{fancyblock}[blue]{Title \"Ag}
+\lipsum[1]
+
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\item This is the third item
+\end{fancylist}
+
+\lipsum[1]
+\end{fancyblock}
+\begin{fancyblock*}[blue]{Title \"Ag}
+\lipsum[1]
+
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\item This is the third item
+\end{fancylist}
+
+\lipsum[1]
+\end{fancyblock*}
+\begin{fancyblock+}[blue]{Title \"Ag}
+\lipsum[1]
+
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\item This is the third item
+\end{fancylist}
+
+\lipsum[1]
+\end{fancyblock+}
+\lipsum[1]
+
+\newpage
+\lipsum[1]
+\begin{fancyblock}[blue]{Title \"Ag}
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\end{fancylist}
+\item This is the third item
+\end{fancylist}
+\end{fancyblock}
+\begin{fancyblock*}[blue]{Title \"Ag}
+\noindent
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\end{fancylist}
+\item This is the third item
+\end{fancylist}
+\end{fancyblock*}
+\begin{fancyblock+}[blue]{Title \"Ag}
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\begin{fancylist}
+\item This is the first item
+\item This is the second item
+\end{fancylist}
+\item This is the third item
+\end{fancylist}
+\end{fancyblock+}
+\lipsum[1]
+
+\newpage
+
+\lipsum[1]
+\begin{fancyblock}[blue]{Title \"Ag}
+\begin{fancylist}
+\item This is the first item
+\item This is the second item: \lipsum[1]
+\item This is the third item
+\end{fancylist}
+\end{fancyblock}
+\begin{fancyblock*}[blue]{Title \"Ag}
+\begin{fancylist}
+\item This is the first item
+\item This is the second item: \lipsum[1]
+\item This is the third item
+\end{fancylist}
+\end{fancyblock*}
+\begin{fancyblock+}[blue]{Title \"Ag}
+\begin{fancylist}
+\item This is the first item
+\item This is the second item: \lipsum[1]
+\item This is the third item
+\end{fancylist}
+\end{fancyblock+}
+\lipsum[1]
+
+
+\end{document}
+
+
