@@ -15,14 +15,26 @@
 %% The Current Maintainer of this work is V. Reverdy.
 %% ========================================================================== %%
 %% The package includes:
-%% - 3 color themes: medium (default), light (light), and dark (dark)
-%% - 4 layouts: listing (default), block (block), boxed (box), 2-columns (frame)
-%% - 2 numbering options: numbered (default), and un-numbered listings (*)
+%% - 2 types of blocks: fancyblock, basicblock (no background, parameterizable)
+%% - 5 color themes: black, blue, red, green, yellow
+%% - 3 margin policies: normal (default), tight (*), loose (+))
+%% - 1 type of list: fancylist
 %% -------------------------------------------------------------------------- %%
 %% \begin{fancyblock}[blue]{Title}
+%% [...]
 %% \begin{fancylist}
+%% \item [...]
 %% \end{fancylist}
+%% [...]
 %% \end{fancyblock}
+%% -------------------------------------------------------------------------- %%
+%% \begin{fancyblock}[color]{Title}
+%% \begin{fancyblock*}[color]{Title}
+%% \begin{fancyblock+}[color]{Title}
+%% -------------------------------------------------------------------------- %%
+%% \begin{basicblock}[color]{Title}{tcboptions}
+%% \begin{basicblock*}[color]{Title}{tcboptions}
+%% \begin{basicblock+}[color]{Title}{tcboptions}
 %% ========================================================================== %%
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{fancyblock}[2021/11/01 Fancy Blocks]
@@ -377,7 +389,7 @@
 
 
 
-%% ================================== BLOCKS ================================= %%
+%% =============================== FANCY BLOCK ============================== %%
 \makeatletter
 %% -------------------------------------------------------------------------- %%
 \newtcolorbox{fancyblock}[2][\defaultcolor]{
@@ -420,6 +432,56 @@
     titlerule = \@ifmtarg{#2}{0pt}{\loosetitlerule},
     toptitle = \@ifmtarg{#2}{-\looseboxsep}{\loosetoptitle},
     bottomtitle = \@ifmtarg{#2}{-\looseboxsep}{\loosebottomtitle},
+}
+%% -------------------------------------------------------------------------- %%
+\makeatother
+%% ========================================================================== %%
+
+
+
+%% =============================== BASIC BLOCK ============================== %%
+\makeatletter
+%% -------------------------------------------------------------------------- %%
+\newtcolorbox{basicblock}[3][\defaultcolor]{
+    fancyblockstyle,
+    code = {%
+        \fancyblock@selectcolor{#1}%
+        \fancyblock@setlist{fancyblock@midcolor}%
+    },
+    colframe = fancyblock@darkcolor,
+    title = \fancyblock@maketitle{#2},
+    titlerule = \@ifmtarg{#2}{0pt}{\normaltitlerule},
+    toptitle = \@ifmtarg{#2}{-\normalboxsep}{\normaltoptitle},
+    bottomtitle = \@ifmtarg{#2}{-\normalboxsep}{\normalbottomtitle},
+    #3
+}
+%% -------------------------------------------------------------------------- %%
+\newtcolorbox{basicblock*}[3][\defaultcolor]{
+    fancyblockstyle*,
+    code = {%
+        \fancyblock@selectcolor{#1}%
+        \fancyblock@setlist[tight]{fancyblock@midcolor}%
+    },
+    colframe = fancyblock@darkcolor,
+    title = \fancyblock@maketitle{#2},
+    titlerule = \@ifmtarg{#2}{0pt}{\tighttitlerule},
+    toptitle = \@ifmtarg{#2}{-\tightboxsep}{\tighttoptitle},
+    bottomtitle = \@ifmtarg{#2}{-\tightboxsep}{\tightbottomtitle},
+    #3
+}
+%% -------------------------------------------------------------------------- %%
+\newtcolorbox{basicblock+}[3][\defaultcolor]{
+    fancyblockstyle+,
+    code = {%
+        \fancyblock@selectcolor{#1}%
+        \fancyblock@setlist[loose]{fancyblock@midcolor}%
+    },
+    colframe = fancyblock@darkcolor,
+    title = \fancyblock@maketitle{#2},
+    titlerule = \@ifmtarg{#2}{0pt}{\loosetitlerule},
+    toptitle = \@ifmtarg{#2}{-\looseboxsep}{\loosetoptitle},
+    bottomtitle = \@ifmtarg{#2}{-\looseboxsep}{\loosebottomtitle},
+    #3
 }
 %% -------------------------------------------------------------------------- %%
 \makeatother
